@@ -1,11 +1,27 @@
-function setup() {
-  createCanvas(400, 400);
+function setup() 
+{
+  createCanvas(500, 500);
+
+  // 플레이어 입력
+  initializeInput();
+
+  // 디버깅용 대화 기록 저장 버튼
+  setSaveHistoryButton();
 }
 
-function draw() {
+function draw() 
+{
   background(220);
-  
-  text("깃헙 배포 테스트", width / 2, height / 2);
-  textAlign(CENTER, CENTER);
-  textSize(32);
+
+  // AI 응답 출력
+  DrawOutputText();
 }
+
+
+function keyPressed() 
+{
+  if (key === 'Enter') {
+    handleUserInput();
+  }
+}
+
