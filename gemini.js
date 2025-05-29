@@ -23,12 +23,17 @@ async function generateContent(userMsg) {
         const data = await response.json();
         const reply = data.candidates[0].content.parts[0].text;
 
-        // 모델 응답을 히스토리에 추가
-        conversationHistory.add('model', reply);
+        const cleanedText = reply.replace(/```json/g, '').replace(/```/g, '').trim();
 
-        return reply;
+        // 모델 응답을 히스토리에 추가
+        conversationHistory.add('model', cleanedText);
+
+        const parsed = JSON.parse(cleanedText);
+
+        return parsed;
     } catch (error) {
         console.error('Error:', error);
         return '(에러 발생)';
     }
 }
+
