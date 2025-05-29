@@ -1,23 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="ko">
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sketch</title>
+    <title>추리 심문 게임</title>
 
     <link rel="stylesheet" type="text/css" href="style.css">
 
     <script src="libraries/p5.min.js"></script>
     <script src="libraries/p5.sound.min.js"></script>
-  </head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.dom.min.js"></script>
+</head>
 
-  <body>
-    <script src="sketch.js"></script>
+<body>
+    <div id="game-container">
+        <div id="p5-canvas-container"></div>
+        
+        <div id="input-area">
+            <input type="text" id="player-input" placeholder="생존자에게 질문을 입력하세요...">
+            <button id="send-button">질문</button>
+        </div>
+
+        <div id="score-display-container">
+            <div id="anxiety-score-display" class="score-display">
+                긴장도: 
+                <div class="score-bar-container">
+                    <div id="anxiety-bar" class="score-bar"></div>
+                    <span id="anxiety-value" class="score-value-hidden" style="display: none;">0</span> 
+                </div>
+            </div>
+            <div id="affinity-score-display" class="score-display">
+                친밀도: 
+                <div class="score-bar-container">
+                    <div id="affinity-bar" class="score-bar"></div>
+                    <span id="affinity-value" class="score-value-hidden" style="display: none;">0</span>
+                </div>
+            </div>
+        </div>
+        </div>
+
     <script src="systemPrompt.js"></script>
-    <script src="gemini.js"></script>
+    <script src="config.js"></script>
     <script src="gemini-data.js"></script>
     <script src="conversation-UI.js"></script>
-    <script src="config.js"></script>
-  </body>
+    <script src="sketch.js"></script>
+</body>
 </html>
