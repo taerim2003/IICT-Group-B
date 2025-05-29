@@ -8,8 +8,8 @@ let tensionCharacterImage; // 긴장 (anxious.png)
 let happyCharacterImage; // 미소 (smile.png)
 
 // 게임 수치 (초기값 설정)
-let tensionScore = 0; 
-let affinityScore = 0;
+let tensionScore = 30; 
+let affinityScore = 30;
 
 // === 대화 텍스트 관련 변수 ===
 let currentSurvivorText = ''; // 현재 생존자의 답변
@@ -41,6 +41,8 @@ function preload() {
             console.error("경로를 다시 확인해주세요: 'assets/smile.png'");
         }
     ); 
+
+    let lines = loadStrings('system-prompt.txt', fileLoaded, fileError);
 }
 
 function setup() {
