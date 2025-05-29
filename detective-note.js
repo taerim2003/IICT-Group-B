@@ -10,14 +10,14 @@ let contentText = {
   "키워드 #2": "딸",
   "키워드 #3": "문호 대학교"
 };
-let isClosed = false;
+let isClosed = true;
 
 let buttons = [];
 
-function preload() {
-  bgImage = loadImage("note.jpg");
-  namjiyeonImage = loadImage("namjiyeon.png");
-  sageonImage = loadImage("sageon.png"); // 사건 개요 이미지
+function preloadNote() {
+  bgImage = loadImage("assets/note.jpg");
+  namjiyeonImage = loadImage("assets/namjiyeon.png");
+  sageonImage = loadImage("assets/sageon.png"); // 사건 개요 이미지
 
   // 텍스트 대신 이미지로 대체할 항목들
   contentImages = {
@@ -26,8 +26,7 @@ function preload() {
   };
 }
 
-function setup() {
-  createCanvas(1365, 768);
+function setupNote() {
   textFont('monospace');
 
   buttons.push(new Button("사건 개요", 80, 135, () => { currentPage = "사건 개요"; isClosed = false; }));
@@ -38,9 +37,7 @@ function setup() {
   buttons.push(new Button("닫기", 1170, 60, () => { isClosed = true; }));  // 닫기 버튼
 }
 
-function draw() {
-  background(10);
-
+function drawNote() {
   if (isClosed) {
     // 닫기 눌린 경우: 화면 비움
     return;
@@ -68,15 +65,26 @@ function draw() {
 }
 
 
-
-
-
-function mousePressed() {
+function mousePressedNote() {
   for (let btn of buttons) {
     if (btn.isMouseInside()) {
       btn.onClick();
     }
   }
+}
+
+// 임시 탐정노트 버튼 코드 noteButton(), noteButtonPressed()
+function noteButton()
+{
+    noteBtn = createButton('임시 탐정노트 버튼');
+    noteBtn.position(10, 50);
+    noteBtn.mousePressed(noteButtonPressed)
+}
+
+function noteButtonPressed()
+{
+    isClosed = !isClosed;
+    console.log(isClosed);
 }
 
 class Button {

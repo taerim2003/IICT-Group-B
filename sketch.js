@@ -43,6 +43,9 @@ function preload() {
     ); 
 
     let lines = loadStrings('system-prompt.txt', fileLoaded, fileError);
+    
+    // 노트 리소스 불러오기
+    preloadNote();
 }
 
 function setup() {
@@ -60,7 +63,6 @@ function setup() {
 
     // 디버깅용 대화 기록 저장 버튼
     // 이 버튼은 P5.js의 createButton으로 생성되므로, 캔버스 위에 배치.
-
     setSaveHistoryButton();
     saveBtn.position(10, 10); // 좌측 상단 (P5.js 캔버스 기준)
 
@@ -70,6 +72,10 @@ function setup() {
 
     // 초기 수치 표시 업데이트
     updateScoreDisplays();
+
+    // 탐정노트 셋업
+    noteButton();
+    setupNote();
 }
 
 function draw() {
@@ -101,6 +107,9 @@ function draw() {
     
     // 대화 텍스트 그리기
     drawDialogueText();
+
+    // 노트 그리기
+    drawNote();
 }
 
 // 이 함수는 conversation-UI.js에서 호출될 것입니다.
@@ -164,4 +173,9 @@ function setDialogueText(survivorText, playerText) {
     currentPlayerText = playerText; // 플레이어 질문 먼저 설정
     currentSurvivorText = survivorText; // 생존자 답변 설정
     console.log("setDialogueText 호출됨. 생존자:", currentSurvivorText, "플레이어:", currentPlayerText);
+}
+
+function mousePressed()
+{
+    mousePressedNote();
 }
