@@ -189,14 +189,17 @@ function RevealKeyWord(response, userText)
         case 0:
             // 1번 키워드
             setDialogueText(response + "키워드#1: 잔화 프로토콜 해금! 내용은 나중에~~!!", userText); 
+            keyWordReveal++;
             break;
         case 1:
             // 2번 키워드
             setDialogueText(response + "키워드#2: 딸 해금! 내용은 나중에~~!!", userText); 
+            keyWordReveal++;
             break;
         case 2:
             // 3번 키워드
             setDialogueText(response + "키워드#3: 문호 대학교 해금! 내용은 나중에~~!!", userText); 
+            keyWordReveal++;
             break;
         default:
             break;
