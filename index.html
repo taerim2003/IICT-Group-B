@@ -8,9 +8,14 @@
 
     <link rel="stylesheet" type="text/css" href="style.css">
 
+    <!-- P5.js 라이브러리 추가 -->
     <script src="libraries/p5.min.js"></script>
     <script src="libraries/p5.sound.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.dom.min.js"></script>
+    
+    <!-- ⭐⭐ global-vars.js는 다른 모든 사용자 정의 JS 파일보다 반드시 먼저 로드되어야 합니다. ⭐⭐ -->
+    <script src="global-vars.js"></script>
+
 </head>
 
 <body>
@@ -27,23 +32,31 @@
                 긴장도: 
                 <div class="score-bar-container">
                     <div id="anxiety-bar" class="score-bar"></div>
-                    <span id="anxiety-value" class="score-value-hidden" style="display: none;">0</span> 
+                    <span id="anxiety-value" class="score-value-hidden">0</span> <!-- ⭐ style="display: none;" 제거 -->
                 </div>
             </div>
             <div id="affinity-score-display" class="score-display">
                 친밀도: 
                 <div class="score-bar-container">
                     <div id="affinity-bar" class="score-bar"></div>
-                    <span id="affinity-value" class="score-value-hidden" style="display: none;">0</span>
+                    <span id="affinity-value" class="score-value-hidden">0</span> <!-- ⭐ style="display: none;" 제거 -->
                 </div>
             </div>
         </div>
-        </div>
+    </div>
 
-    <script src="systemPrompt.js"></script>
-    <script src="config.js"></script>
+    <!-- P5.js 스케치와 다른 스크립트 파일들 (body 태그 닫히기 직전에 배치) -->
+    <!-- 각 모듈의 역할과 종속성에 따라 순서를 조정합니다. -->
+    <script src="config.js"></script> 
+    <script src="system-prompt-manager.js"></script> 
     <script src="gemini-data.js"></script>
+    <script src="gemini.js"></script>
+    <script src="character-loader.js"></script> 
+    <script src="dialogue-manager.js"></script> 
+    <script src="game-core.js"></script> 
+    <script src="game-utilities.js"></script> 
     <script src="conversation-UI.js"></script>
+    <script src="detective-note.js"></script>
     <script src="sketch.js"></script>
 </body>
 </html>

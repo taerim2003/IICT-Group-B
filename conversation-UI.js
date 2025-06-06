@@ -1,161 +1,221 @@
-let playerInput; // HTML <input> 요소를 참조할 변수
-let sendButton;  // HTML <button> 요소를 참조할 변수
+// 이 파일은 대화 및 점수 표시와 관련된 주요 게임 UI 상호 작용을 처리합니다.
+// global-vars.js의 전역 변수와 다른 모듈의 함수를 사용합니다.
 
+// HTML 입력 및 버튼 요소에 대한 참조 (global-vars.js에 선언, 여기에서 할당).
+let playerInput; 
+let sendButton;  
 
-// 수치 표시 HTML 요소들을 참조할 변수
+// 점수 표시를 위한 HTML 요소에 대한 참조 (global-vars.js에 선언, 여기에서 할당).
 let tensionValueDisplay; 
 let affinityValueDisplay;
 
-// 수치 바 및 컨테이너 참조 변수
+// 점수 바 및 컨테이너를 위한 HTML 요소에 대한 참조 (global-vars.js에 선언, 여기에서 할당).
 let tensionBar; 
 let affinityBar;
 let tensionScoreDisplayContainer; 
-let affinityScoreDisplayContainer; // 친밀도 수치 전체 div
+let affinityScoreDisplayContainer; 
 
-
-// 이 함수는 sketch.js의 setup()에서 한 번만 호출되어 HTML UI 요소들을 초기화합니다.
+// 이 함수는 HTML UI 요소를 초기화하고 이벤트 리스너를 설정합니다.
+// sketch.js의 setup() 함수에서 호출됩니다.
 function initializeUIElements() {
-    console.log("initializeUIElements() 시작");
+    console.log("initializeUIElements() 시작.");
+    
+    // HTML 요소를 전역 변수에 할당합니다 (P5.js의 select() 메서드 사용).
+    // 디버깅을 위한 강력한 null 체크를 포함합니다.
     playerInput = select('#player-input'); 
+    if (!playerInput) console.error("오류: #player-input 요소를 찾을 수 없습니다!");
+
     sendButton = select('#send-button');   
+    if (!sendButton) console.error("오류: #send-button 요소를 찾을 수 없습니다!");
 
-
-    // 수치 표시 HTML 요소 참조
     tensionValueDisplay = select('#anxiety-value'); 
-    console.log("tensionValueDisplay selected:", tensionValueDisplay); // 디버깅 로그
+    if (!tensionValueDisplay) console.error("오류: #anxiety-value 요소를 찾을 수 없습니다!");
+    else console.log("tensionValueDisplay selected:", tensionValueDisplay); 
+
     affinityValueDisplay = select('#affinity-value');
-    console.log("affinityValueDisplay selected:", affinityValueDisplay); // 디버깅 로그
+    if (!affinityValueDisplay) console.error("오류: #affinity-value 요소를 찾을 수 없습니다!");
+    else console.log("affinityValueDisplay selected:", affinityValueDisplay); 
 
     tensionBar = select('#anxiety-bar'); 
-    affinityBar = select('#affinity-bar'); // 친밀도 바 요소 참조
+    if (!tensionBar) console.error("오류: #anxiety-bar 요소를 찾을 수 없습니다!");
+
+    affinityBar = select('#affinity-bar'); 
+    if (!affinityBar) console.error("오류: #affinity-bar 요소를 찾을 수 없습니다!");
+
     tensionScoreDisplayContainer = select('#anxiety-score-display'); 
-    affinityScoreDisplayContainer = select('#affinity-score-display'); // 친밀도 수치 div 참조
+    if (!tensionScoreDisplayContainer) console.error("오류: #anxiety-score-display 요소를 찾을 수 없습니다!");
+
+    affinityScoreDisplayContainer = select('#affinity-score-display'); 
+    if (!affinityScoreDisplayContainer) console.error("오류: #affinity-score-display 요소를 찾을 수 없습니다!");
     
+    // 입력 및 버튼에 대한 이벤트 리스너를 설정합니다.
+    // 리스너를 추가하기 전에 요소가 존재하는지 확인합니다.
+    if (sendButton) {
+        sendButton.mousePressed(handleUserInput);
+    } else {
+        console.warn("sendButton 요소가 없어 mousePressed 리스너를 추가할 수 없습니다.");
+    }
 
-    // 버튼 클릭 이벤트 리스너 활성화
-    sendButton.mousePressed(handleUserInput);
+    if (playerInput && playerInput.elt) { // playerInput이 P5.Element이므로 .elt 속성 존재 여부를 확인합니다.
+        playerInput.elt.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleUserInput();
+            }
+        });
+    } else {
+        console.warn("playerInput 요소가 없어 keypress 리스너를 추가할 수 없습니다.");
+    }
 
-    // 입력창에서 엔터 키 누르면 질문 전송 이벤트 리스너 활성화
-    playerInput.elt.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            handleUserInput();
-        }
-    });
-
-    // 수치 표시 영역 마우스 오버/아웃 이벤트 리스너 추가
-    // 마우스를 올리면 숫자 표시
-    tensionScoreDisplayContainer.elt.addEventListener('mouseover', () => { 
-        console.log("Mouseover tensionScoreDisplayContainer"); // 디버깅 로그
-        showTensionScore(true); 
-    });
-    affinityScoreDisplayContainer.elt.addEventListener('mouseover', () => {
-        console.log("Mouseover affinityScoreDisplayContainer"); // 디버깅 로그
-        showAffinityScore(true);
-    });
-    // 마우스를 떼면 숫자 숨김
-    tensionScoreDisplayContainer.elt.addEventListener('mouseout', () => { 
-        console.log("Mouseout tensionScoreDisplayContainer"); // 디버깅 로그
-        showTensionScore(false); 
-    });
-    affinityScoreDisplayContainer.elt.addEventListener('mouseout', () => {
-        console.log("Mouseout affinityScoreDisplayContainer"); // 디버깅 로그
-        showAffinityScore(false);
-    });
+    // ⭐ 수치 표시 영역 마우스 오버/아웃 이벤트 리스너 제거 (이제 항상 보이도록)
+    // if (tensionScoreDisplayContainer && affinityScoreDisplayContainer) {
+    //     tensionScoreDisplayContainer.elt.addEventListener('mouseover', () => { 
+    //         showTensionScore(true); 
+    //     });
+    //     affinityScoreDisplayContainer.elt.addEventListener('mouseover', () => {
+    //         showAffinityScore(true);
+    //     });
+    //     tensionScoreDisplayContainer.elt.addEventListener('mouseout', () => { 
+    //         showTensionScore(false); 
+    //     });
+    //     affinityScoreDisplayContainer.elt.addEventListener('mouseout', () => {
+    //         showAffinityScore(false);
+    //     });
+    // } else {
+    //     console.warn("점수 표시 컨테이너 요소가 없어 마우스 리스너를 추가할 수 없습니다.");
+    // }
     
-
-    console.log("initializeUIElements() 완료");
+    console.log("initializeUIElements() 완료.");
 }
 
-// 플레이어 입력 처리 및 AI 응답 요청 함수
+// 플레이어 입력을 처리하고 AI 응답을 요청합니다.
+// sendButton의 mousePressed 또는 playerInput의 keypress (Enter)에 의해 호출됩니다.
 async function handleUserInput() {
+    // 플레이어 입력 요소 및 값의 유효성을 검사합니다.
+    if (!playerInput || playerInput.value().trim() === '') {
+        console.warn("사용자 입력이 비어있거나 playerInput 요소를 찾을 수 없습니다.");
+        return; 
+    }
     const userText = playerInput.value().trim(); 
-    if (userText === '') return; 
     
     console.log("handleUserInput() 시작. 사용자 입력:", userText);
 
-    // 1. 플레이어의 질문을 먼저 표시하고, 생존자의 이전 답변은 지웁니다.
-    setDialogueText('', userText); 
-    // 2. 입력창을 비웁니다.
+    // 1. 플레이어의 질문을 즉시 표시하고 생존자의 응답을 플레이스홀더로 설정합니다.
+    // setDialogueText는 dialogue-manager.js에 정의되어 있습니다.
+    setDialogueText('(그녀는 답변을 고민하고 있다.)', userText); 
+    // 2. 입력 필드를 지웁니다.
     playerInput.value(''); 
 
-    // AI 응답 요청 (gemini.js의 generateContent 함수 호출)
+    // Gemini API에서 AI 응답을 요청합니다 (generateContent는 gemini.js에 정의).
     const aiResponse = await generateContent(userText);
     console.log("AI 응답 받음:", aiResponse);
     
-    // AI 응답이 오면, 플레이어의 질문은 유지하고 생존자의 답변을 업데이트합니다.
-    setDialogueText(aiResponse, userText); 
-    console.log("setDialogueText 호출 완료.");
+    // AI 응답에서 친밀도, 긴장도, 관련성, 응답 텍스트를 추출합니다.
+    const { affinity, tension, relevance, response } = aiResponse;
 
-    // TODO: 여기에 키워드 감지 및 게임 진행 로직 추가
-    // AI 응답 내용에 따라 긴장도/친밀도 수치를 변경하는 로직을 추가해야 합니다.
-    // 현재는 테스트를 위해 임의로 수치를 변경하게 했습니다!
-    
-    let newTension = tensionScore;
-    let newAffinity = affinityScore; // sketch.js의 전역 변수 affinityScore 사용
+    // AI 응답의 구조와 유형을 검증합니다.
+    if (typeof affinity === 'number' && typeof tension === 'number' && typeof relevance === 'number' && typeof response === 'string') { 
+        let newTension = tensionScore; // global-vars.js에서 전역 tensionScore 사용
+        let newAffinity = affinityScore; // global-vars.js에서 전역 affinityScore 사용
 
-    // 예시: 특정 키워드에 따라 수치 변경 시뮬레이션
-    if (aiResponse.includes("무서워요") || userText.includes("거짓말")) {
-        newTension += 20; // 긴장도 수치 증가
-        newAffinity -= 5; // 친밀도 수치 감소
-    } else if (aiResponse.includes("감사해요") || userText.includes("괜찮아요")) {
-        newAffinity += 15; // 친밀도 수치 증가
-        newTension -= 5; // 긴장도 수치 감소
-    } else {
-        // 아무 키워드도 없으면 기본적으로 변화 없음
-        newAffinity += 0;
-        newTension -= 0; 
+        // 키워드 해금 조건 검사: 관련성, 긴장도, 친밀도가 충분히 높을 경우.
+        if (relevance >= 70 && tensionScore >= 80 && affinityScore >= 80) {
+            RevealKeyWord(response, userText); // 이 파일에 정의됨
+            // 키워드 해금 후 점수 재설정 (updateGameScores는 game-core.js에 정의).
+            updateGameScores(30, 30); 
+            updateScoreDisplays(); // HTML UI 업데이트 (이 파일에 정의)
+            
+            // 키워드 해금 및 관련 내용 표시 후에 장면 인덱스 업데이트
+            if (keyWordReveal < backgroundImages.length) { // 다음 장면이 존재하면 업데이트
+                currentSceneIndex = keyWordReveal; // keyWordReveal은 0, 1, 2...
+                console.log(`장면 변경: currentSceneIndex = ${currentSceneIndex}`);
+            } else {
+                console.log("모든 키워드 해금 및 마지막 장면 도달.");
+            }
+            return;
+        }
+
+        // 관련성에 따라 점수 조정: 너무 낮으면 두 점수 모두 감소.
+        if (relevance <= 20) {
+            newTension += relevance - 30; // 긴장도 감소 (예: 20 -> -10, 10 -> -20)
+            newAffinity += relevance - 30; // 친밀도 감소
+        } else { // 그렇지 않으면 AI 응답의 변경 사항을 적용.
+            newTension += tension;
+            newAffinity += affinity;
+        }
+
+        // 게임 점수 업데이트 (game-core.js에 정의).
+        updateGameScores(newTension, newAffinity);
+        // 캔버스에 대화 텍스트 설정 (dialogue-manager.js에 정의).
+        setDialogueText(response, userText); 
+
+    } else { // AI 응답 형식이 예상과 다른 경우 처리.
+        console.warn("AI 응답 형식이 예상과 다릅니다:", aiResponse);
+        setDialogueText("응답을 처리할 수 없습니다. 다시 시도해 주세요.", userText);
     }
-
-    // 수치 업데이트 함수 호출 (sketch.js에 정의된 함수)
-    // 이 함수가 sketch.js의 전역 변수를 업데이트하고 HTML UI도 업데이트합니다.
-    updateGameScores(newTension, newAffinity); 
-    console.log("handleUserInput() 완료.");
+    
+    // 점수 변경 후 HTML UI 점수 표시를 업데이트합니다.
+    updateScoreDisplays(); // 이 파일에 정의됨.
 }
 
-// 수치 표시 HTML UI를 업데이트하는 함수 
-// sketch.js의 updateGameScores 함수에서도 호출됩니다.
+// 긴장도 및 친밀도 점수를 위한 HTML UI 요소를 업데이트합니다.
+// handleUserInput() 및 sketch.js의 setup()에서 호출됩니다.
 function updateScoreDisplays() {
-    // console.log("updateScoreDisplays() 호출됨");
+    // 점수 바 및 표시 요소가 초기화되었는지 확인합니다.
+    if (!tensionBar || !affinityBar || !tensionValueDisplay || !affinityValueDisplay) {
+        console.error("점수 바 또는 표시 요소가 초기화되지 않았습니다. updateScoreDisplays를 실행할 수 없습니다.");
+        return;
+    }
 
-    // 수치 바의 너비를 업데이트 
+    // 현재 점수(global-vars.js)를 기반으로 점수 바의 너비를 업데이트합니다.
     tensionBar.style('width', tensionScore + '%'); 
     affinityBar.style('width', affinityScore + '%');
     
+    // 빛나는 효과를 위한 'glowing' 클래스 추가/제거 로직
+    // requestAnimationFrame을 사용하여 DOM이 업데이트된 후 다음 프레임에서 클래스 제거를 예약합니다.
+    // 이렇게 하면 브라우저가 glowing 클래스가 추가된 상태를 렌더링할 시간을 갖게 됩니다.
 
-    // 숫자가 보이는 상태일 때만 숫자 값 업데이트
-    // showTensionScore/showAffinityScore 함수에서 이미 html() 업데이트를 처리하므로,
-    // 이 부분은 숫자가 이미 보이는 상태에서만 값을 갱신하도록 유지합니다.
-    if (tensionValueDisplay.elt.style.display === 'inline-block') {
-        tensionValueDisplay.html(tensionScore); 
-    }
-    if (affinityValueDisplay.elt.style.display === 'inline-block') { // display 속성으로 직접 확인
-        affinityValueDisplay.html(affinityScore); 
-    }
-    
+    // 긴장도 바에 glowing 클래스 추가
+    tensionBar.elt.classList.add('glowing');
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            tensionBar.elt.classList.remove('glowing');
+        }, 500); // 빛나는 효과 지속 시간: 0.5초
+    });
+
+    // 친밀도 바에 glowing 클래스 추가
+    affinityBar.elt.classList.add('glowing');
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            affinityBar.elt.classList.remove('glowing');
+        }, 500); // 빛나는 효과 지속 시간: 0.5초
+    });
+
+
+    // ⭐ 숫자가 항상 보이도록 바로 업데이트
+    tensionValueDisplay.html(tensionScore); 
+    affinityValueDisplay.html(affinityScore); 
 }
 
-// === 긴장도 수치 숫자 표시를 제어하는 함수 === 
-function showTensionScore(show) { 
-    console.log("showTensionScore called with:", show, "Current tensionScore:", tensionScore); // 디버깅 로그
-    if (show) {
-        tensionValueDisplay.style('display', 'inline-block', 'important'); 
-        tensionValueDisplay.html(tensionScore); // 보일 때 최신 값으로 업데이트 
-        console.log("Tension score set to visible. Current display style:", tensionValueDisplay.elt.style.display); // 변경 후 display 확인
-    } else {
-        tensionValueDisplay.style('display', 'none', 'important'); 
-        console.log("Tension score set to hidden. Current display style:", tensionValueDisplay.elt.style.display); // 변경 후 display 확인 
-    }
-}
+// ⭐ showTensionScore 및 showAffinityScore 함수 제거 (이제 항상 보이므로 필요 없음)
+// function showTensionScore(show) { ... }
+// function showAffinityScore(show) { ... }
 
-// === 친밀도 수치 숫자 표시를 제어하는 함수 ===
-function showAffinityScore(show) {
-    console.log("showAffinityScore called with:", show, "Current affinityScore:", affinityScore); // 디버깅 로그
-    if (show) {
-        affinityValueDisplay.style('display', 'inline-block', 'important'); // !important 추가
-        affinityValueDisplay.html(affinityScore); // 보일 때 최신 값으로 업데이트
-        console.log("Affinity score set to visible. Current display style:", affinityValueDisplay.elt.style.display); // 변경 후 display 확인
-    } else {
-        affinityValueDisplay.style('display', 'none', 'important'); // !important 추가
-        console.log("Affinity score set to hidden. Current display style:", affinityValueDisplay.elt.style.display); // 변경 후 display 확인
+
+// 키워드 해금 로직 (global-vars.js의 keyWordReveal 변수 사용).
+// 키워드 잠금 해제 조건이 충족될 때 handleUserInput()에서 호출됩니다.
+function RevealKeyWord(response, userText) {
+    switch (keyWordReveal) {
+        case 0:
+            setDialogueText(response + "키워드#1: 잔화 프로토콜 해금! 내용은 나중에~~!!", userText); 
+            break;
+        case 1:
+            setDialogueText(response + "키워드#2: 딸 해금! 내용은 나중에~~!!", userText); 
+            break;
+        case 2:
+            setDialogueText(response + "키워드#3: 문호 대학교 해금! 내용은 나중에~~!!", userText); 
+            break;
+        default:
+            break;
     }
+    keyWordReveal++; // 다음 키워드를 위해 keyWordReveal 증가
 }
