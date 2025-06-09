@@ -66,33 +66,6 @@ function initializeUIElements() {
         console.warn("playerInput 요소가 없어 keypress 리스너를 추가할 수 없습니다.");
     }
 
-    // 입력창에서 엔터 키 누르면 질문 전송 이벤트 리스너 활성화
-    playerInput.elt.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            handleUserInput();
-        }
-    });
-
-    // 수치 표시 영역 마우스 오버/아웃 이벤트 리스너 추가
-    // 마우스를 올리면 숫자 표시
-    tensionScoreDisplayContainer.elt.addEventListener('mouseover', () => { 
-        //console.log("Mouseover tensionScoreDisplayContainer"); // 디버깅 로그
-        showTensionScore(true); 
-    });
-    affinityScoreDisplayContainer.elt.addEventListener('mouseover', () => {
-        //console.log("Mouseover affinityScoreDisplayContainer"); // 디버깅 로그
-        showAffinityScore(true);
-    });
-    // 마우스를 떼면 숫자 숨김
-    tensionScoreDisplayContainer.elt.addEventListener('mouseout', () => { 
-        //console.log("Mouseout tensionScoreDisplayContainer"); // 디버깅 로그
-        showTensionScore(false); 
-    });
-    affinityScoreDisplayContainer.elt.addEventListener('mouseout', () => {
-        //console.log("Mouseout affinityScoreDisplayContainer"); // 디버깅 로그
-        showAffinityScore(false);
-    });
-    
     console.log("initializeUIElements() 완료.");
 }
 
