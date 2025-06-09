@@ -1,15 +1,3 @@
-
-
-let currentPage = "사건 개요";
-let bgImage;
-let namjiyeonImage;
-let sageonImage;
-let contentImages = {};
-let contentText = {
-  "키워드 #1": "잔화 프로토콜",
-  "키워드 #2": "딸",
-  "키워드 #3": "문호 대학교"
-};
 let keywordUnlocked = {
   "키워드 #1": false,
   "키워드 #2": false,
@@ -18,9 +6,6 @@ let keywordUnlocked = {
 let keyword1Image, keyword1undefinedImage;
 let keyword2Image, keyword2undefinedImage;
 let keyword3Image, keyword3undefinedImage;
-let isClosed = true;
-
-let buttons = [];
 
 function preloadNote() {
   bgImage = loadImage("assets/note.jpg");

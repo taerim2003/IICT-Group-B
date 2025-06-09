@@ -9,9 +9,6 @@ let sendButton;
 let tensionValueDisplay; 
 let affinityValueDisplay;
 
-// 키워드 얼마나 했는지
-let keyWordReveal = 0;
-
 // 수치 바 및 컨테이너 참조 변수
 let tensionBar; 
 let affinityBar;

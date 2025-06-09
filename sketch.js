@@ -1,21 +1,3 @@
-// HTML/CSS에서 정의한 게임 컨테이너의 크기와 동일하게 설정
-let gameContainerWidth = 1280; 
-let gameContainerHeight = 720; 
-
-// 캐릭터 이미지를 담을 변수 선언
-let characterImage; // 기본 표정 (witness.png)
-let tensionCharacterImage; // 긴장 (anxious.png)
-let happyCharacterImage; // 미소 (smile.png)
-
-// 게임 수치 (초기값 설정)
-let tensionScore = 30; 
-let affinityScore = 30;
-
-// === 대화 텍스트 관련 변수 ===
-let currentSurvivorText = ''; // 현재 생존자의 답변
-let currentPlayerText = '';   // 현재 플레이어의 질문
-
-
 // preload() 함수: P5.js 스케치가 시작되기 전에 이미지, 폰트 등 외부 파일을 로드합니다.
 // 캐릭터, 시스템 프롬프트, 노트 관련 리소스 로드 함수를 호출합니다.
 function preload() {
