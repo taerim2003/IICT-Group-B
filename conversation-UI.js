@@ -116,8 +116,8 @@ async function handleUserInput() {
         }
         else // 그 외의 경우에는 분석된 친밀도와 긴장도 증감을 적용.
         {
-            newTension += tension;
-            newAffinity += affinity;
+            newTension += Math.max(-10, Math.min(10, tension));
+            newAffinity += Math.max(-10, Math.min(10, affinity));
         }
 
         updateGameScores(newTension, newAffinity);
@@ -128,7 +128,7 @@ async function handleUserInput() {
     else // 답변 형태가 이상한 경우..
     {
         console.warn("AI 응답 형식이 예상과 다릅니다:", aiResponse);
-        setDialogueText("응답을 처리할 수 없습니다. 다시 시도해 주세요.", userText);
+        setDialogueText("어... 잠깐만요. 잘 못 들었는데, 다시 한번 말씀해주시겠어요?\n(오류입니다. 새로고침 해주세요.)", userText);
     }
 
     
@@ -188,17 +188,17 @@ function RevealKeyWord(response, userText)
     {
         case 0:
             // 1번 키워드
-            setDialogueText(response + "키워드#1: 잔화 프로토콜 해금! 내용은 나중에~~!!", userText); 
+            setDialogueText(response + "\n\n저, 수사관님. 수사에 도움이 될진 모르겠지만 말씀드리고 싶은 것이 있는데요...\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
             keyWordReveal++;
             break;
         case 1:
             // 2번 키워드
-            setDialogueText(response + "키워드#2: 딸 해금! 내용은 나중에~~!!", userText); 
+            setDialogueText(response + "\n\n그런데 수사관님. 혹시 이 정보가 도움이 될까요?\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
             keyWordReveal++;
             break;
         case 2:
             // 3번 키워드
-            setDialogueText(response + "키워드#3: 문호 대학교 해금! 내용은 나중에~~!!", userText); 
+            setDialogueText(response + "\n\n그런데 저, 그, 사실은... 아까 미처 말씀 못 드린 부분이 있는데...\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
             keyWordReveal++;
             break;
         default:

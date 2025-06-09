@@ -1,17 +1,20 @@
 async function generateContent(userMsg) {
+    // 시스템 프롬프트를 초기화 시 포함
+    if (!conversationHistory.initialized) {
+        conversationHistory.add('user', SYSTEM_PROMPT); // system 역할이 없으므로 user로
+        conversationHistory.initialized = true;
+    }
+
     // 사용자의 입력을 히스토리에 추가
     conversationHistory.add('user', userMsg);
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${CONFIG.GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${CONFIG.GEMINI_API_KEY}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                system_instruction: {
-                    parts: [{ text: SYSTEM_PROMPT }],
-                },
                 contents: conversationHistory.getAll(),
             }),
         });
@@ -36,4 +39,3 @@ async function generateContent(userMsg) {
         return '(에러 발생)';
     }
 }
-
