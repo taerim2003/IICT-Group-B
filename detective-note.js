@@ -10,6 +10,14 @@ let contentText = {
   "키워드 #2": "딸",
   "키워드 #3": "문호 대학교"
 };
+let keywordUnlocked = {
+  "키워드 #1": false,
+  "키워드 #2": false,
+  "키워드 #3": false
+};
+let keyword1Image, keyword1undefinedImage;
+let keyword2Image, keyword2undefinedImage;
+let keyword3Image, keyword3undefinedImage;
 let isClosed = true;
 
 let buttons = [];
@@ -17,7 +25,13 @@ let buttons = [];
 function preloadNote() {
   bgImage = loadImage("assets/note.jpg");
   namjiyeonImage = loadImage("assets/namjiyeon.png");
-  sageonImage = loadImage("assets/sageon.png"); // 사건 개요 이미지
+  sageonImage = loadImage("assets/sageon.png"); 
+  keyword1Image=loadImage("assets/keyword1.png");
+  keyword1undefinedImage=loadImage("assets/keyword1Undefined.png");
+  keyword2Image=loadImage("assets/keyword2.png");
+  keyword2undefinedImage=loadImage("assets/keyword2Undefined.png");
+  keyword3Image=loadImage("assets/keyword3.png");
+  keyword3undefinedImage=loadImage("assets/keyword3Undefined.png");
 
   // 텍스트 대신 이미지로 대체할 항목들
   contentImages = {
@@ -43,10 +57,25 @@ function drawNote() {
     return;
   }
 
-  // 사건 개요 / 남지연 프로필은 전용 이미지로 전체 배경 대체
-  if (contentImages[currentPage]) {
+  if (currentPage.startsWith("키워드")) {
+    let imgToShow;
+  
+    if (currentPage === "키워드 #1") {
+      imgToShow = keywordUnlocked["키워드 #1"] ? keyword1Image : keyword1undefinedImage;
+    } else if (currentPage === "키워드 #2") {
+      imgToShow = keywordUnlocked["키워드 #2"] ? keyword2Image : keyword2undefinedImage;
+    } else if (currentPage === "키워드 #3") {
+      imgToShow = keywordUnlocked["키워드 #3"] ? keyword3Image : keyword2undefinedImage; // 없는 경우 대체
+    }
+  
+    image(imgToShow, 0, 0, width, height);
+  }
+  else if (contentImages[currentPage]) {
     image(contentImages[currentPage], 0, 0, width, height);
-  } else {
+  }
+  // 사건 개요 / 남지연 프로필은 전용 이미지로 전체 배경 대체
+  
+  else {
     // 나머지 키워드는 기본 배경 note.jpg
     image(bgImage, 0, 0, width, height);
 
@@ -92,8 +121,8 @@ class Button {
     this.label = label;
     this.x = x;
     this.y = y;
-    this.w = 200;
-    this.h = 50;
+    this.w = 250;
+    this.h = 80;
     this.onClick = onClick;
   }
 
@@ -111,4 +140,8 @@ class Button {
     return mouseX > this.x && mouseX < this.x + this.w &&
            mouseY > this.y && mouseY < this.y + this.h;
   }
+}
+
+function unlockKeyword(keywordName) {
+  keywordUnlocked[keywordName] = true;
 }
