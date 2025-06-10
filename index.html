@@ -1,23 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="ko">
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sketch</title>
+    <title>추리 심문 게임</title>
 
     <link rel="stylesheet" type="text/css" href="style.css">
 
+    <!-- P5.js 라이브러리 추가 -->
     <script src="libraries/p5.min.js"></script>
     <script src="libraries/p5.sound.min.js"></script>
-  </head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.dom.min.js"></script>
+    
+    <!-- ⭐⭐ global-vars.js는 다른 모든 사용자 정의 JS 파일보다 반드시 먼저 로드되어야 합니다. ⭐⭐ -->
+    <script src="global-vars.js"></script>
 
-  <body>
-    <script src="sketch.js"></script>
-    <script src="systemPrompt.js"></script>
-    <script src="gemini.js"></script>
+</head>
+
+<body>
+    <div id="game-container">
+        <div id="p5-canvas-container"></div>
+        
+        <div id="input-area">
+            <input type="text" id="player-input" placeholder="생존자에게 질문을 입력하세요...">
+            <button id="send-button">질문</button>
+        </div>
+
+        <div id="score-display-container">
+            <div id="anxiety-score-display" class="score-display">
+                긴장도: 
+                <div class="score-bar-container">
+                    <div id="anxiety-bar" class="score-bar"></div>
+                    <span id="anxiety-value" class="score-value-hidden">0</span> <!-- ⭐ style="display: none;" 제거 -->
+                </div>
+            </div>
+            <div id="affinity-score-display" class="score-display">
+                친밀도: 
+                <div class="score-bar-container">
+                    <div id="affinity-bar" class="score-bar"></div>
+                    <span id="affinity-value" class="score-value-hidden">0</span> <!-- ⭐ style="display: none;" 제거 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- P5.js 스케치와 다른 스크립트 파일들 (body 태그 닫히기 직전에 배치) -->
+    <!-- 각 모듈의 역할과 종속성에 따라 순서를 조정합니다. -->
+    <script src="config.js"></script> 
+    <script src="system-prompt-manager.js"></script> 
     <script src="gemini-data.js"></script>
+    <script src="gemini.js"></script>
+    <script src="character-loader.js"></script> 
+    <script src="dialogue-manager.js"></script> 
+    <script src="game-core.js"></script> 
+    <script src="game-utilities.js"></script> 
+    <script src="detective-note.js"></script>
     <script src="conversation-UI.js"></script>
-    <script src="config.js"></script>
-  </body>
+    <script src="intro.js"></script>
+    <script src="sketch.js"></script>
+</body>
 </html>
