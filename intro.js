@@ -4,32 +4,46 @@ let displayedText = "";
 let charIndex = 0;
 let lineIndex = 0;
 let nextCharTime = 0;
-let typingSpeed = 30; // 밀리초 단위
+let typingSpeed = 30;
 let button;
 let customFont;
 
-function preload() {
-  customFont = loadFont("Bold.ttf"); // 폰트 파일 이름
+function preloadIntro() {
+  customFont = loadFont("Bold.ttf");
 }
 
-function setup() {
-  createCanvas(800, 600);
-  textFont(customFont); // 적용
+function setupIntro() {
+  textFont(customFont);
   textSize(20);
   fill(255);
   lines = getSceneLines(scene);
   setupButton();
-  
 }
 
-function draw() {
+function drawIntro() {
   background(0);
-  let y = 100;
-  let currentText = displayedText.split('\n');
-  for (let i = 0; i < currentText.length; i++) {
-    text(currentText[i], 50, y);
-    y += 30;
-  }
+  textAlign(CENTER, TOP); // 가로 중앙 정렬
+  textWrap(WORD);         // 단어 단위 줄바꿈
+  textSize(20);
+  textFont(customFont);
+  fill(255);
+
+  let textBlock = displayedText;
+  let linesCount = textBlock.split('\n').length;
+  let lineHeight = 30;
+  let totalHeight = linesCount * lineHeight;
+  let yStart = (height - totalHeight) / 2;
+
+  // 중앙 정렬, 최대 너비 지정
+  // x좌표를 width/2 - (width*0.8)/2로 해야 "사각형"이 중앙에 위치함
+  let boxWidth = width * 0.8;
+  let boxX = width / 2 - boxWidth / 2;
+  text(textBlock, boxX, yStart, boxWidth);
+  
+ 
+  drawButton();
+  // 이하 생략
+
 
   if (millis() > nextCharTime && lineIndex < lines.length) {
     if (charIndex < lines[lineIndex].length) {
@@ -44,20 +58,6 @@ function draw() {
   }
 }
 
-function mousePressed() {
-  // 버튼 클릭으로 다음 씬 이동
-  if (
-    mouseX > button.x &&
-    mouseX < button.x + button.width &&
-    mouseY > button.y &&
-    mouseY < button.y + button.height
-  ) {
-    if (scene === 0) {
-      changeScene(1);
-    }
-  }
-}
-
 function setupButton() {
   button = {
     x: 650,
@@ -69,15 +69,25 @@ function setupButton() {
 }
 
 function drawButton() {
-  if (scene === 0 && lineIndex >= lines.length) {
+  if ((scene === 0 || scene === 1) && lineIndex >= lines.length) {
     fill(50);
-    rect(button.x, button.y, button.width, button.height, 10);
+    let btnW = 100, btnH = 40;
+    let btnX = width / 2 - btnW / 2;
+    let btnY = height - 120; // 원하는 y값
+    rect(btnX, btnY, btnW, btnH, 10);
     fill(255);
     textSize(16);
     textAlign(CENTER, CENTER);
-    text(button.label, button.x + button.width / 2, button.y + button.height / 2);
+    let label = (scene === 0) ? "수사 시작" : "게임 시작";
+    text(label, width / 2, btnY + btnH / 2);
+    // button.x, button.y도 btnX, btnY로 업데이트(클릭 판정용)
+    button.x = btnX;
+    button.y = btnY;
+    button.width = btnW;
+    button.height = btnH;
   }
 }
+
 
 function changeScene(newScene) {
   scene = newScene;
@@ -129,29 +139,4 @@ function getSceneLines(scene) {
   }
   return [];
 }
-
-function draw() {
-  background(0);
-  let y = 100;
-  let currentText = displayedText.split('\n');
-  for (let i = 0; i < currentText.length; i++) {
-    text(currentText[i], 50, y);
-    y += 30;
-  }
-
-  drawButton();
-
-  if (millis() > nextCharTime && lineIndex < lines.length) {
-    if (charIndex < lines[lineIndex].length) {
-      displayedText += lines[lineIndex][charIndex];
-      charIndex++;
-    } else {
-      displayedText += "\n";
-      lineIndex++;
-      charIndex = 0;
-    }
-    nextCharTime = millis() + typingSpeed;
-  }
-}
-
 
