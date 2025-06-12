@@ -17,9 +17,10 @@ function extractJsonFromString(text) {
     return null; // JSON을 찾지 못한 경우 null 반환
 }
 
+
 // Gemini API를 사용하여 콘텐츠를 생성하는 메인 함수입니다.
 // conversation-UI.js의 handleUserInput() 함수에서 호출됩니다.
-async function generateContent(userMsg) {
+async function generateContent(userMsg, keyWordReveal, scoreRange, status) {
     // 사용자의 입력을 대화 기록에 추가합니다 (gemini-data.js에서 참조).
     conversationHistory.add('user', userMsg);
 
@@ -32,9 +33,15 @@ async function generateContent(userMsg) {
             return { response: '(시스템 프롬프트 로드 에러)', affinity: 0, tension: 0, relevance: 0 }; 
         }
 
+        const filledPrompt = fillSystemPrompt(SYSTEM_PROMPT, {
+            keyWordReveal,
+            scoreRange,
+            status
+        });
+
         const payload = {
             system_instruction: {
-                parts: [{ text: SYSTEM_PROMPT }],
+                parts: [{ text: filledPrompt }],
             },
             contents: conversationHistory.getAll(),
             // CRITICAL: 모델이 JSON 형식으로만 응답하도록 스키마와 함께 명확히 지시합니다.
@@ -54,7 +61,7 @@ async function generateContent(userMsg) {
         };
 
         // API 호출을 수행합니다.
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${CONFIG.GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${CONFIG.GEMINI_API_KEY}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -103,4 +110,8 @@ async function generateContent(userMsg) {
         console.error('Gemini API 호출 또는 처리 중 최종 에러 발생:', error);
         return { response: '(알 수 없는 최종 API 에러)', affinity: 0, tension: 0, relevance: 0 };
     }
+}
+
+function fillSystemPrompt(template, variables) {
+    return template.replace(/\$\{(\w+)\}/g, (_, name) => variables[name] ?? '');
 }

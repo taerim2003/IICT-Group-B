@@ -19,8 +19,24 @@ let backgroundImages = [];
 let currentSceneIndex = 0; 
 
 // 게임 점수 (game-core.js 및 conversation-UI.js에서 업데이트)
-let tensionScore = 30; 
-let affinityScore = 30;
+const initTensionScore = 50;
+const initAffinityScore = 50;
+const scoreMax = 15;
+const scoreMin = -8;
+const difference = 20;
+let tensionScore = initTensionScore; 
+let affinityScore = initAffinityScore;
+
+// 대답 스테이터스 목록
+const Status = {
+  IDLE: 'idle',       // 경계 태세
+  TENSION: 'tension', // 긴장 태세
+  AFFINITY: 'affinity', // 친밀 태세
+  HELPFUL: 'helpful'  // 협조 태세
+};
+
+// 현재 스테이터스
+let status = Status.IDLE;
 
 // 대화 텍스트 (dialogue-manager.js에서 관리)
 let currentSurvivorText = ''; // 현재 생존자의 답변
