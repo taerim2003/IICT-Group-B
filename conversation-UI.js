@@ -9,7 +9,7 @@ let sendButton;
 let tensionValueDisplay; 
 let affinityValueDisplay;
 
-// 점수 바 및 컨테이너를 위한 HTML 요소에 대한 참조 (global-vars.js에 선언, 여기에서 할당).
+// 수치 바 및 컨테이너 참조 변수
 let tensionBar; 
 let affinityBar;
 let tensionScoreDisplayContainer; 
@@ -66,24 +66,6 @@ function initializeUIElements() {
         console.warn("playerInput 요소가 없어 keypress 리스너를 추가할 수 없습니다.");
     }
 
-    // ⭐ 수치 표시 영역 마우스 오버/아웃 이벤트 리스너 제거 (이제 항상 보이도록)
-    // if (tensionScoreDisplayContainer && affinityScoreDisplayContainer) {
-    //     tensionScoreDisplayContainer.elt.addEventListener('mouseover', () => { 
-    //         showTensionScore(true); 
-    //     });
-    //     affinityScoreDisplayContainer.elt.addEventListener('mouseover', () => {
-    //         showAffinityScore(true);
-    //     });
-    //     tensionScoreDisplayContainer.elt.addEventListener('mouseout', () => { 
-    //         showTensionScore(false); 
-    //     });
-    //     affinityScoreDisplayContainer.elt.addEventListener('mouseout', () => {
-    //         showAffinityScore(false);
-    //     });
-    // } else {
-    //     console.warn("점수 표시 컨테이너 요소가 없어 마우스 리스너를 추가할 수 없습니다.");
-    // }
-    
     console.log("initializeUIElements() 완료.");
 }
 
@@ -109,38 +91,39 @@ async function handleUserInput() {
     const aiResponse = await generateContent(userText);
     console.log("AI 응답 받음:", aiResponse);
     
-    // AI 응답에서 친밀도, 긴장도, 관련성, 응답 텍스트를 추출합니다.
+    // AI 응답 내용에 따라 긴장도/친밀도 수치 받아옴
+     // sketch.js의 전역 변수 affinityScore 사용
+
     const { affinity, tension, relevance, response } = aiResponse;
 
-    // AI 응답의 구조와 유형을 검증합니다.
-    if (typeof affinity === 'number' && typeof tension === 'number' && typeof relevance === 'number' && typeof response === 'string') { 
-        let newTension = tensionScore; // global-vars.js에서 전역 tensionScore 사용
-        let newAffinity = affinityScore; // global-vars.js에서 전역 affinityScore 사용
+    if ( // 타입 검사. 답변 json이 제대로 구성되었는지.
+        typeof affinity === 'number' &&
+        typeof tension === 'number' &&
+        typeof relevance === 'number' &&
+        typeof response === 'string'
+    )
+    {
+        let newTension = tensionScore;
+        let newAffinity = affinityScore;
 
-        // 키워드 해금 조건 검사: 관련성, 긴장도, 친밀도가 충분히 높을 경우.
-        if (relevance >= 70 && tensionScore >= 80 && affinityScore >= 80) {
-            RevealKeyWord(response, userText); // 이 파일에 정의됨
-            // 키워드 해금 후 점수 재설정 (updateGameScores는 game-core.js에 정의).
-            updateGameScores(30, 30); 
-            updateScoreDisplays(); // HTML UI 업데이트 (이 파일에 정의)
-            
-            // 키워드 해금 및 관련 내용 표시 후에 장면 인덱스 업데이트
-            if (keyWordReveal < backgroundImages.length) { // 다음 장면이 존재하면 업데이트
-                currentSceneIndex = keyWordReveal; // keyWordReveal은 0, 1, 2...
-                console.log(`장면 변경: currentSceneIndex = ${currentSceneIndex}`);
-            } else {
-                console.log("모든 키워드 해금 및 마지막 장면 도달.");
-            }
+        // 키워드 해금 검사: 관련도가 높고 친밀도랑 긴장도도 높을 시
+        if (relevance >= 70 && tensionScore >= 80 && affinityScore >= 80) 
+        {
+            RevealKeyWord(response, userText);
+            updateGameScores(30, 30);
             return;
         }
 
-        // 관련성에 따라 점수 조정: 너무 낮으면 두 점수 모두 감소.
-        if (relevance <= 20) {
-            newTension += relevance - 30; // 긴장도 감소 (예: 20 -> -10, 10 -> -20)
-            newAffinity += relevance - 30; // 친밀도 감소
-        } else { // 그렇지 않으면 AI 응답의 변경 사항을 적용.
-            newTension += tension;
-            newAffinity += affinity;
+        // 질문의 관련도에 따라 분기.
+        if (relevance <= 20) // 관련도가 낮으면 친밀도, 긴장도 분석 수치에 관계 없이 하락 (10 ~ 30까지 하락)
+        {
+            newTension += relevance - 30;
+            newAffinity += relevance - 30;
+        }
+        else // 그 외의 경우에는 분석된 친밀도와 긴장도 증감을 적용.
+        {
+            newTension += Math.max(-10, Math.min(10, tension));
+            newAffinity += Math.max(-10, Math.min(10, affinity));
         }
 
         // 게임 점수 업데이트 (game-core.js에 정의).
@@ -150,7 +133,7 @@ async function handleUserInput() {
 
     } else { // AI 응답 형식이 예상과 다른 경우 처리.
         console.warn("AI 응답 형식이 예상과 다릅니다:", aiResponse);
-        setDialogueText("응답을 처리할 수 없습니다. 다시 시도해 주세요.", userText);
+        setDialogueText("어... 잠깐만요. 잘 못 들었는데, 다시 한번 말씀해주시겠어요?\n(오류입니다. 새로고침 해주세요.)", userText);
     }
     
     // 점수 변경 후 HTML UI 점수 표시를 업데이트합니다.
@@ -190,7 +173,6 @@ function updateScoreDisplays() {
         }, 500); // 빛나는 효과 지속 시간: 0.5초
     });
 
-
     // ⭐ 숫자가 항상 보이도록 바로 업데이트
     tensionValueDisplay.html(tensionScore); 
     affinityValueDisplay.html(affinityScore); 
@@ -199,7 +181,6 @@ function updateScoreDisplays() {
 // ⭐ showTensionScore 및 showAffinityScore 함수 제거 (이제 항상 보이므로 필요 없음)
 // function showTensionScore(show) { ... }
 // function showAffinityScore(show) { ... }
-
 
 // 키워드 해금 로직 (global-vars.js의 keyWordReveal 변수 사용).
 // 키워드 잠금 해제 조건이 충족될 때 handleUserInput()에서 호출됩니다.
@@ -218,4 +199,34 @@ function RevealKeyWord(response, userText) {
             break;
     }
     keyWordReveal++; // 다음 키워드를 위해 keyWordReveal 증가
+}
+
+function RevealKeyWord(response, userText)
+{
+    switch (keyWordReveal)
+    {
+        case 0:
+            // 1번 키워드
+            setDialogueText(response + "\n\n저, 수사관님. 수사에 도움이 될진 모르겠지만 말씀드리고 싶은 것이 있는데요...\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
+            keyWordReveal++;
+            unlockKeyword("키워드 #1");
+            console.log(keywordUnlocked)
+            break;
+        case 1:
+            // 2번 키워드
+            setDialogueText(response + "\n\n그런데 수사관님. 혹시 이 정보가 도움이 될까요?\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
+            keyWordReveal++;
+            unlockKeyword("키워드 #2");
+            console.log(keywordUnlocked)
+            break;
+        case 2:
+            // 3번 키워드
+            setDialogueText(response + "\n\n그런데 저, 그, 사실은... 아까 미처 말씀 못 드린 부분이 있는데...\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
+            keyWordReveal++;
+            unlockKeyword("키워드 #3");
+            console.log(keywordUnlocked)
+            break;
+        default:
+            break;
+    }
 }

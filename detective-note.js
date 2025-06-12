@@ -1,140 +1,169 @@
-// 이 파일은 탐정 노트의 기능, UI 및 상태를 관리합니다.
-// global-vars.js에 정의된 전역 변수와 상호 작용합니다.
+let keywordUnlocked = {
+  "키워드 #1": false,
+  "키워드 #2": false,
+  "키워드 #3": false
+};
+let keyword1Image, keyword1undefinedImage;
+let keyword2Image, keyword2undefinedImage;
+let keyword3Image, keyword3undefinedImage;
 
-// 노트 자산을 위한 P5.js preload 함수 훅입니다.
 function preloadNote() {
-    console.log("노트 리소스 로드 중...");
-    // 이 변수들은 global-vars.js에 선언되어 있습니다.
-    bgImage = loadImage("assets/note.jpg");
-    namjiyeonImage = loadImage("assets/namjiyeon.png");
-    sageonImage = loadImage("assets/sageon.png"); // 사건 개요 이미지
+  bgImage = loadImage("assets/note.jpg");
+  namjiyeonImage = loadImage("assets/namjiyeon.png");
+  sageonImage = loadImage("assets/sageon.png"); 
+  keyword1Image=loadImage("assets/keyword1.png");
+  keyword1undefinedImage=loadImage("assets/keyword1Undefined.png");
+  keyword2Image=loadImage("assets/keyword2.png");
+  keyword2undefinedImage=loadImage("assets/keyword2Undefined.png");
+  keyword3Image=loadImage("assets/keyword3.png");
+  keyword3undefinedImage=loadImage("assets/keyword3Undefined.png");
 
-    // 콘텐츠 제목을 해당 이미지에 매핑합니다.
-    contentImages = {
-        "사건 개요": sageonImage,
-        "남지연 프로필": namjiyeonImage
-    };
+  // 텍스트 대신 이미지로 대체할 항목들
+  contentImages = {
+    "사건 개요": sageonImage,
+    "남지연 프로필": namjiyeonImage
+  };
 }
 
-// 탐정 노트의 버튼을 설정합니다.
-// sketch.js의 setup() 함수에서 호출됩니다.
 function setupNote() {
     textFont('monospace');
 
-    // 노트 탐색을 위한 버튼을 생성합니다.
-    buttons.push(new Button("사건 개요", 80, 135, () => { currentPage = "사건 개요"; isClosed = false; }));
-    buttons.push(new Button("남지연 프로필", 80, 225, () => { currentPage = "남지연 프로필"; isClosed = false; }));
-    buttons.push(new Button("키워드 #1", 80, 305, () => { currentPage = "키워드 #1"; isClosed = false; }));
-    buttons.push(new Button("키워드 #2", 80, 395, () => { currentPage = "키워드 #2"; isClosed = false; }));
-    buttons.push(new Button("키워드 #3", 80, 480, () => { currentPage = "키워드 #3"; isClosed = false; }));
-    buttons.push(new Button("닫기", 1170, 60, () => { isClosed = true; })); // 닫기 버튼
-    console.log("탐정 노트 셋업 완료.");
+    buttons.push(new Button("사건 개요", 60, 120, () => { currentPage = "사건 개요"; isClosed = false; }));
+    buttons.push(new Button("남지연 프로필", 60, 180, () => { currentPage = "남지연 프로필"; isClosed = false; }));
+    buttons.push(new Button("키워드 #1", 60, 280, () => { currentPage = "키워드 #1"; isClosed = false; }));
+    buttons.push(new Button("키워드 #2", 60, 350, () => { currentPage = "키워드 #2"; isClosed = false; }));
+    buttons.push(new Button("키워드 #3", 60, 420, () => { currentPage = "키워드 #3"; isClosed = false; }));
+
+    // ⭐ THIS IS THE LINE TO CHANGE ⭐
+    // Change the onClick handler for the "닫기" (Close/X) button
+    buttons.push(new Button("닫기", 1170, 60, () => {
+        toggleNote(); // ⭐ Call toggleNote() here instead of just setting isClosed = true;
+    }));
 }
 
 // 메인 "탐정 노트" 버튼을 생성합니다.
 // sketch.js의 setup() 함수에서 호출됩니다.
 function noteButton() {
-    // noteBtn은 global-vars.js에 선언되어 있습니다.
-    let noteBtn = createButton('탐정 노트'); 
-    noteBtn.position(10, 50); // ⭐ 좌측 상단 (10, 50) 위치로 재설정
-    noteBtn.mousePressed(toggleNote); // 노트 토글을 위한 클릭 핸들러 할당
-    console.log("탐정 노트 버튼 생성 완료.");
+  let noteBtn = createButton('탐정 노트'); 
+  noteBtn.position(10, 50); // ⭐ 좌측 상단 (10, 50) 위치로 재설정
+  noteBtn.mousePressed(toggleNote); // 노트 토글을 위한 클릭 핸들러 할당
+  console.log("탐정 노트 버튼 생성 완료.");
 }
 
 // 탐정 노트의 가시성을 토글합니다.
 // 캔버스 컨테이너와 점수 표시 컨테이너의 z-index를 관리합니다.
+// 탐정 노트의 가시성을 토글합니다.
+// 캔버스 컨테이너와 점수 표시 컨테이너의 z-index를 관리합니다.
 function toggleNote() {
-    isClosed = !isClosed; // 닫힘 상태 토글
-    console.log("탐정 노트 가시성 토글됨, isClosed:", isClosed);
+    isClosed = !isClosed;
 
-    // p5CanvasContainer와 scoreDisplayContainerElement는 global-vars.js에 선언, sketch.js에서 할당됩니다.
     if (!p5CanvasContainer || !scoreDisplayContainerElement) {
         console.error("p5CanvasContainer 또는 scoreDisplayContainerElement가 초기화되지 않았습니다. z-index를 변경할 수 없습니다.");
         return;
     }
 
-    if (!isClosed) { // 노트가 열리는 경우
-        // 캔버스 컨테이너(P5.js가 그리는 곳)의 z-index를 높게 설정하여 모든 HTML 요소 위에 오도록 합니다.
-        p5CanvasContainer.style('z-index', '999'); 
-        console.log("Canvas z-index set to 999 (Note open)");
-        
-        // 점수 표시 컨테이너의 z-index를 낮게 설정하여 노트 뒤로 숨깁니다.
-        // 이것은 사라지는 것이 아니라, 노트 뒤에 가려져 보이게 하는 것입니다.
-        scoreDisplayContainerElement.style('z-index', '0'); 
-        console.log("Score Display z-index set to 0 (Note open)");
+    // 입력창 컨테이너 선택
+    let inputContainer = select('#input-area'); // Changed to #input-area as per index.html structure
+    if (!inputContainer) {
+        console.warn("입력창 컨테이너(#input-area)를 찾을 수 없습니다.");
+        return;
+    }
 
-    } else { // 노트가 닫히는 경우
-        // 캔버스 컨테이너의 z-index를 기본값으로 재설정합니다.
-        p5CanvasContainer.style('z-index', '1'); 
-        console.log("Canvas z-index set to 1 (Note closed)");
-
-        // 점수 표시 컨테이너의 z-index를 원래 값으로 재설정합니다 (style.css에서 정의된 값).
-        scoreDisplayContainerElement.style('z-index', '15'); 
-        console.log("Score Display z-index set to 15 (Note closed)");
+    // ⭐ 핵심 변경: 노트가 열릴 때 p5CanvasContainer의 z-index를 가장 높게 설정합니다.
+    if (!isClosed) { // 노트가 열릴 때
+        p5CanvasContainer.style('z-index', '999'); // 가장 높은 z-index로 설정
+        scoreDisplayContainerElement.style('z-index', '0'); // 점수 컨테이너를 뒤로
+        inputContainer.style('z-index', '0'); // 입력창 컨테이너를 뒤로
+    } else { // 노트가 닫힐 때
+        p5CanvasContainer.style('z-index', '1'); // 기본 z-index로 복원
+        scoreDisplayContainerElement.style('z-index', '15'); // 점수 컨테이너를 앞으로
+        inputContainer.style('z-index', '10'); // 입력창 컨테이너를 앞으로 (score-display-container보다 낮게, p5CanvasContainer보다 높게)
     }
 }
 
-// 노트 내용을 캔버스에 그립니다 (노트가 열려있을 경우).
-// sketch.js의 draw() 함수에서 호출됩니다.
+
 function drawNote() {
-    if (isClosed) {
-        return; // 닫혀있으면 아무것도 그리지 않습니다.
-    }
+  if (isClosed) {
+    // 닫기 눌린 경우: 화면 비움
+    return;
+  }
 
-    // 현재 페이지에 특정 콘텐츠 이미지가 있는 경우 전체 배경 이미지를 그립니다.
-    if (contentImages[currentPage]) {
-        image(contentImages[currentPage], 0, 0, width, height);
-    } else {
-        // 그렇지 않으면 기본 노트 배경 이미지를 그립니다.
-        image(bgImage, 0, 0, width, height);
-
-        // 키워드 페이지의 텍스트 콘텐츠를 그립니다.
-        fill(255);
-        textSize(24);
-        textAlign(LEFT, TOP);
-        let txt = contentText[currentPage] || "내용 없음"; // global-vars.js에서 텍스트 콘텐츠 가져옴
-        text(txt, 330, 200, width - 320, height - 120);
+  if (currentPage.startsWith("키워드")) {
+    let imgToShow;
+  
+    if (currentPage === "키워드 #1") {
+      imgToShow = keywordUnlocked["키워드 #1"] ? keyword1Image : keyword1undefinedImage;
+    } else if (currentPage === "키워드 #2") {
+      imgToShow = keywordUnlocked["키워드 #2"] ? keyword2Image : keyword2undefinedImage;
+    } else if (currentPage === "키워드 #3") {
+      imgToShow = keywordUnlocked["키워드 #3"] ? keyword3Image : keyword3undefinedImage; // 없는 경우 대체
     }
+  
+    image(imgToShow, 0, 0, width, height);
+  }
+  else if (contentImages[currentPage]) {
+    image(contentImages[currentPage], 0, 0, width, height);
+  }
+  // 사건 개요 / 남지연 프로필은 전용 이미지로 전체 배경 대체
+  
+  else {
+    // 나머지 키워드는 기본 배경 note.jpg
+    image(bgImage, 0, 0, width, height);
 
-    // 모든 노트 탐색 버튼을 표시합니다.
-    for (let btn of buttons) {
-        btn.display();
-    }
+    // 텍스트 출력
+    fill(255);
+    textSize(24);
+    textAlign(LEFT, TOP);
+    let txt = contentText[currentPage] || "내용 없음";
+    text(txt, 330, 200, width - 320, height - 120);
+  }
+
+  // 버튼 표시 (항상)
+  for (let btn of buttons) {
+    btn.display();
+  }
 }
 
-// 노트 버튼에 대한 마우스 클릭 이벤트를 처리합니다.
-// sketch.js의 mousePressed() 함수에서 호출됩니다.
 function mousePressedNote() {
-    for (let btn of buttons) {
-        if (btn.isMouseInside()) {
-            btn.onClick();
-        }
+  for (let btn of buttons) {
+    if (btn.isMouseInside()) {
+      btn.onClick();
     }
+  }
 }
 
-// 탐정 노트 내 인터랙티브 요소를 위한 Button 클래스입니다.
+function noteButtonPressed()
+{
+    isClosed = !isClosed;
+    console.log(isClosed);
+}
+
 class Button {
-    constructor(label, x, y, onClick) {
-        this.label = label;
-        this.x = x;
-        this.y = y;
-        this.w = 200;
-        this.h = 50;
-        this.onClick = onClick;
-    }
+  constructor(label, x, y, onClick) {
+    this.label = label;
+    this.x = x;
+    this.y = y;
+    this.w = 250;
+    this.h = 80;
+    this.onClick = onClick;
+  }
 
-    display() {
-        noStroke();
-        noFill();
-        // rect(this.x, this.y, this.w, this.h); // 디버깅: 클릭 영역을 보려면 주석 해제
-        fill(255,0); // 텍스트 색상 (초기 투명)
-        textSize(20);
-        textAlign(CENTER, CENTER);
-        text(this.label, this.x + this.w / 2, this.y + this.h / 2);
-    }
+  display() {
+    noStroke();
+    noFill();
+    // rect(this.x, this.y, this.w, this.h); // 디버깅용 클릭 영역
+    fill(255,0); // 텍스트도 투명
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text(this.label, this.x + this.w / 2, this.y + this.h / 2);
+  }
 
-    isMouseInside() {
-        return mouseX > this.x && mouseX < this.x + this.w &&
-               mouseY > this.y && mouseY < this.y + this.h;
-    }
+  isMouseInside() {
+    return mouseX > this.x && mouseX < this.x + this.w &&
+           mouseY > this.y && mouseY < this.y + this.h;
+  }
+}
+
+function unlockKeyword(keywordName) {
+  keywordUnlocked[keywordName] = true;
 }
