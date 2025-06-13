@@ -26,6 +26,7 @@ function preloadNote() {
 }
 
 function setupNote() {
+  
   textFont('monospace');
 
   buttons.push(new Button("사건 개요", 60, 120, () => { currentPage = "사건 개요"; isClosed = false; }));
@@ -33,8 +34,7 @@ function setupNote() {
   buttons.push(new Button("키워드 #1", 60, 280, () => { currentPage = "키워드 #1"; isClosed = false; }));
   buttons.push(new Button("키워드 #2", 60, 350, () => { currentPage = "키워드 #2"; isClosed = false; }));
   buttons.push(new Button("키워드 #3", 60, 420, () => { currentPage = "키워드 #3"; isClosed = false; }));
-  buttons.push(new Button("닫기", 1170, 60, () => { isClosed = true; }));  // 닫기 버튼
-}
+  buttons.push(new Button("닫기", 1170, 60, () => { toggleNote(); }));  // 닫기 버튼
 
 // 메인 "탐정 노트" 버튼을 생성합니다.
 // sketch.js의 setup() 함수에서 호출됩니다.
@@ -47,6 +47,7 @@ function noteButton() {
 
 // 탐정 노트의 가시성을 토글합니다.
 // 캔버스 컨테이너와 점수 표시 컨테이너의 z-index를 관리합니다.
+
 function toggleNote() {
   isClosed = !isClosed;
 
@@ -56,7 +57,7 @@ function toggleNote() {
   }
 
   // 입력창 컨테이너 선택 (id가 다르면 실제 id로 바꿔주세요)
-  let inputContainer = select('#input-container'); // 혹은 select('#player-input').parent()
+  let inputContainer = select('#input-area'); // 혹은 select('#player-input').parent()
   if (!inputContainer) {
     console.warn("입력창 컨테이너(#input-container)를 찾을 수 없습니다.");
     return;
@@ -74,6 +75,7 @@ function toggleNote() {
     inputContainer.style('z-index', '15'); // 입력창을 다시 위로!
   }
 }
+
 
 
 

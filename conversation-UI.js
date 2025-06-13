@@ -183,7 +183,6 @@ function updateScoreDisplays() {
 // function showTensionScore(show) { ... }
 // function showAffinityScore(show) { ... }
 
-
 // 키워드 해금 로직 (global-vars.js의 keyWordReveal 변수 사용).
 // 키워드 잠금 해제 조건이 충족될 때 handleUserInput()에서 호출됩니다.
 function RevealKeyWord(response, userText) {
@@ -231,4 +230,5 @@ function RevealKeyWord(response, userText)
         default:
             break;
     }
+
 }

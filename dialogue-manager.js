@@ -3,6 +3,7 @@
 
 // P5.js 캔버스에 대화 텍스트를 그립니다.
 // sketch.js의 draw() 함수에서 호출됩니다.
+
 let dialogueBoxImg;
 
 function preload() {
@@ -60,4 +61,12 @@ function drawDialogueText() {
   );
 
   textAlign(LEFT, TOP); // 정렬 초기화
+
+// 생존자와 플레이어를 위한 새로운 대화 텍스트를 설정합니다.
+// conversation-UI.js에서 호출됩니다.
+// global-vars.js의 currentSurvivorText 및 currentPlayerText를 업데이트합니다.
+function setDialogueText(survivorText, playerText) {
+    currentPlayerText = playerText; 
+    currentSurvivorText = survivorText; 
+    console.log("setDialogueText 호출됨. 생존자:", currentSurvivorText, "플레이어:", currentPlayerText);
 }

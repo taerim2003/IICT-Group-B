@@ -50,12 +50,14 @@ function setup() {
     // 게임 시작 시 초기 대화 메시지 설정
     setDialogueText('', '');
 
+
     // 초기 수치 표시 업데이트
     updateScoreDisplays();
 
     // 탐정 노트 셋업 및 버튼 생성
     noteButton();
     setupNote();
+
 
     console.log("setup() 완료");
 }
