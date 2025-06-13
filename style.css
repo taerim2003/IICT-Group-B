@@ -45,6 +45,7 @@ canvas {
 /* === 입력창 스타일 === */
 #input-area {
     position: absolute;
+
     bottom: 20px; /* 하단에서 20px 띄움 */
     left: 50%;
     transform: translateX(-50%); /* 중앙 정렬 */
@@ -167,7 +168,6 @@ canvas {
 }
 
 /* 개별 바의 glowing 효과 (이제 .score-bar.glowing에서 currentColor를 사용하므로 필요 없음) */
-
 
 /* === 숫자 값 스타일 (이제 항상 보이도록) === */
 .score-value-hidden {

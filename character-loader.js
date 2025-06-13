@@ -49,6 +49,7 @@ function loadCharacterImages() {
 // 캔버스에 캐릭터 이미지를 그리는 함수입니다.
 // sketch.js의 draw() 함수에서 호출됩니다.
 function drawCharacter() {
+
     let currentCharacterImage;
 
     if (status == Status.TENSION) 
@@ -62,6 +63,7 @@ function drawCharacter() {
     {
         currentCharacterImage = characterImage;
     }
+
 
     // 로드된 유효한 캐릭터 이미지가 있는 경우 그립니다.
     if (currentCharacterImage && currentCharacterImage.width > 0 && currentCharacterImage.height > 0) {

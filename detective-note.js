@@ -26,20 +26,24 @@ function preloadNote() {
 }
 
 function setupNote() {
+  
   textFont('monospace');
 
-  buttons.push(new Button("사건 개요", 80, 135, () => { currentPage = "사건 개요"; isClosed = false; }));
-  buttons.push(new Button("남지연 프로필", 80, 225, () => { currentPage = "남지연 프로필"; isClosed = false; }));
-  buttons.push(new Button("키워드 #1", 80, 305, () => { currentPage = "키워드 #1"; isClosed = false; }));
-  buttons.push(new Button("키워드 #2", 80, 395, () => { currentPage = "키워드 #2"; isClosed = false; }));
-  buttons.push(new Button("키워드 #3", 80, 480, () => { currentPage = "키워드 #3"; isClosed = false; }));
-  buttons.push(new Button("닫기", 1170, 60, () => { isClosed = true; }));  // 닫기 버튼
+
+  buttons.push(new Button("사건 개요", 60, 120, () => { currentPage = "사건 개요"; isClosed = false; }));
+  buttons.push(new Button("남지연 프로필", 60, 180, () => { currentPage = "남지연 프로필"; isClosed = false; }));
+  buttons.push(new Button("키워드 #1", 60, 280, () => { currentPage = "키워드 #1"; isClosed = false; }));
+  buttons.push(new Button("키워드 #2", 60, 350, () => { currentPage = "키워드 #2"; isClosed = false; }));
+  buttons.push(new Button("키워드 #3", 60, 420, () => { currentPage = "키워드 #3"; isClosed = false; }));
+  buttons.push(new Button("닫기", 1170, 60, () => { toggleNote(); }));  // 닫기 버튼
+
 }
 
 // 메인 "탐정 노트" 버튼을 생성합니다.
 // sketch.js의 setup() 함수에서 호출됩니다.
 function noteButton() {
   let noteBtn = createButton('탐정 노트'); 
+  noteBtn.id('note-button');
   noteBtn.position(10, 50); // ⭐ 좌측 상단 (10, 50) 위치로 재설정
   noteBtn.mousePressed(toggleNote); // 노트 토글을 위한 클릭 핸들러 할당
   console.log("탐정 노트 버튼 생성 완료.");
@@ -47,14 +51,23 @@ function noteButton() {
 
 // 탐정 노트의 가시성을 토글합니다.
 // 캔버스 컨테이너와 점수 표시 컨테이너의 z-index를 관리합니다.
+
 function toggleNote() {
   isClosed = !isClosed; // 닫힘 상태 토글
   console.log("탐정 노트 가시성 토글됨, isClosed:", isClosed);
 
   // p5CanvasContainer와 scoreDisplayContainerElement는 global-vars.js에 선언, sketch.js에서 할당됩니다.
   if (!p5CanvasContainer || !scoreDisplayContainerElement) {
-      console.error("p5CanvasContainer 또는 scoreDisplayContainerElement가 초기화되지 않았습니다. z-index를 변경할 수 없습니다.");
-      return;
+
+    console.error("p5CanvasContainer 또는 scoreDisplayContainerElement가 초기화되지 않았습니다. z-index를 변경할 수 없습니다.");
+    return;
+  }
+
+  // 입력창 컨테이너 선택 (id가 다르면 실제 id로 바꿔주세요)
+  let inputContainer = select('#input-area'); // 혹은 select('#player-input').parent()
+  if (!inputContainer) {
+    console.warn("입력창 컨테이너(#input-container)를 찾을 수 없습니다.");
+    return;
   }
 
   if (!isClosed) { // 노트가 열리는 경우

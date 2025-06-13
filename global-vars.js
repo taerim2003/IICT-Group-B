@@ -13,9 +13,10 @@ let characterImage;         // 기본 표정 (witness.png)
 let tensionCharacterImage;  // 긴장 표정 (anxious.png)
 let happyCharacterImage;    // 미소 표정 (smile.png)
 
-// ⭐ 배경 이미지를 담을 배열 선언. 이 부분이 필수입니다.
+
+// 배경 이미지를 담을 배열 선언. 이 부분이 필수입니다.
 let backgroundImages = [];
-// ⭐ 현재 게임 장면의 인덱스 (0부터 시작, 키워드 해금에 따라 변경됩니다)
+// 현재 게임 장면의 인덱스 (0부터 시작, 키워드 해금에 따라 변경됩니다)
 let currentSceneIndex = 0; 
 
 // 게임 점수 (game-core.js 및 conversation-UI.js에서 업데이트)
@@ -37,6 +38,10 @@ const Status = {
 
 // 현재 스테이터스
 let status = Status.IDLE;
+
+// 배드엔딩 유형 (null, "zero", "tension", "affinity") - global-vars.js에 추가
+let badEndingType = null;
+
 
 // 대화 텍스트 (dialogue-manager.js에서 관리)
 let currentSurvivorText = ''; // 현재 생존자의 답변
@@ -64,4 +69,6 @@ let keyWordReveal = 0;
 
 // HTML 요소 참조 (sketch.js setup에서 할당)
 let p5CanvasContainer; // P5.js 캔버스를 감싸는 HTML div 참조
+
 let scoreDisplayContainerElement; // 긴장도/친밀도 점수 컨테이너 HTML div 참조
+
