@@ -203,7 +203,7 @@ function updateScoreDisplays() {
 }
 
 
-function RevealKeyWord(response, userText)
+function revealKeyWord(response, userText)
 {
     switch (keyWordReveal)
     {
