@@ -82,7 +82,7 @@ async function handleUserInput() {
     console.log("handleUserInput() 시작. 사용자 입력:", userText);
 
     // 1. 플레이어의 질문을 즉시 표시하고 생존자의 응답을 플레이스홀더로 설정합니다.
-    // setDialogueText는 dialogue-manager.js에 정의되어 있습니다.
+    
     setDialogueText('(그녀는 답변을 고민하고 있다.)', userText); 
     // 2. 입력 필드를 지웁니다.
     playerInput.value(''); 
@@ -174,33 +174,11 @@ function updateScoreDisplays() {
     });
 
 
-    // ⭐ 숫자가 항상 보이도록 바로 업데이트
+    //  숫자가 항상 보이도록 바로 업데이트
     tensionValueDisplay.html(tensionScore); 
     affinityValueDisplay.html(affinityScore); 
 }
 
-// ⭐ showTensionScore 및 showAffinityScore 함수 제거 (이제 항상 보이므로 필요 없음)
-// function showTensionScore(show) { ... }
-// function showAffinityScore(show) { ... }
-
-// 키워드 해금 로직 (global-vars.js의 keyWordReveal 변수 사용).
-// 키워드 잠금 해제 조건이 충족될 때 handleUserInput()에서 호출됩니다.
-function RevealKeyWord(response, userText) {
-    switch (keyWordReveal) {
-        case 0:
-            setDialogueText(response + "키워드#1: 잔화 프로토콜 해금! 내용은 나중에~~!!", userText); 
-            break;
-        case 1:
-            setDialogueText(response + "키워드#2: 딸 해금! 내용은 나중에~~!!", userText); 
-            break;
-        case 2:
-            setDialogueText(response + "키워드#3: 문호 대학교 해금! 내용은 나중에~~!!", userText); 
-            break;
-        default:
-            break;
-    }
-    keyWordReveal++; // 다음 키워드를 위해 keyWordReveal 증가
-}
 
 function RevealKeyWord(response, userText)
 {

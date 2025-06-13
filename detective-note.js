@@ -35,11 +35,13 @@ function setupNote() {
   buttons.push(new Button("키워드 #2", 60, 350, () => { currentPage = "키워드 #2"; isClosed = false; }));
   buttons.push(new Button("키워드 #3", 60, 420, () => { currentPage = "키워드 #3"; isClosed = false; }));
   buttons.push(new Button("닫기", 1170, 60, () => { toggleNote(); }));  // 닫기 버튼
+}
 
 // 메인 "탐정 노트" 버튼을 생성합니다.
 // sketch.js의 setup() 함수에서 호출됩니다.
 function noteButton() {
   let noteBtn = createButton('탐정 노트'); 
+  noteBtn.id('note-button');
   noteBtn.position(10, 50); // ⭐ 좌측 상단 (10, 50) 위치로 재설정
   noteBtn.mousePressed(toggleNote); // 노트 토글을 위한 클릭 핸들러 할당
   console.log("탐정 노트 버튼 생성 완료.");
