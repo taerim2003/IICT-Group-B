@@ -106,7 +106,7 @@ function drawNote() {
     } else if (currentPage === "키워드 #2") {
       imgToShow = keywordUnlocked["키워드 #2"] ? keyword2Image : keyword2undefinedImage;
     } else if (currentPage === "키워드 #3") {
-      imgToShow = keywordUnlocked["키워드 #3"] ? keyword3Image : keyword2undefinedImage; // 없는 경우 대체
+      imgToShow = keywordUnlocked["키워드 #3"] ? keyword3Image : keyword3undefinedImage; // 없는 경우 대체
     }
   
     image(imgToShow, 0, 0, width, height);
