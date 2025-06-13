@@ -49,14 +49,21 @@ function loadCharacterImages() {
 // 캔버스에 캐릭터 이미지를 그리는 함수입니다.
 // sketch.js의 draw() 함수에서 호출됩니다.
 function drawCharacter() {
-    let currentCharacterImage = characterImage; // 기본은 witness.png (global-vars.js에서 참조)
 
-    // 긴장도/친밀도 점수(global-vars.js)에 따라 캐릭터 표정을 결정합니다.
-    if (tensionScore >= 100) { 
+    let currentCharacterImage;
+
+    if (status == Status.TENSION) 
+    { 
         currentCharacterImage = tensionCharacterImage; 
-    } else if (affinityScore >= 100) { // 긴장도가 친밀도보다 우선순위가 높다고 가정
+    } 
+    else if (status == Status.AFFINITY) {
         currentCharacterImage = happyCharacterImage; 
     }
+    else
+    {
+        currentCharacterImage = characterImage;
+    }
+
 
     // 로드된 유효한 캐릭터 이미지가 있는 경우 그립니다.
     if (currentCharacterImage && currentCharacterImage.width > 0 && currentCharacterImage.height > 0) {

@@ -1,3 +1,4 @@
+
 // sketch.js
 
 // 전역 게임 상태를 'intro'로 초기화합니다.
@@ -15,6 +16,7 @@ function preload() {
     loadCharacterImages();
     loadSystemPrompt();
     preloadNote();
+
     console.log("preload() 완료.");
 }
 
@@ -40,6 +42,7 @@ function setup() {
     setupIntro();
 
     // HTML UI 요소들을 초기화하고 이벤트 리스너를 설정합니다.
+
     initializeUIElements();
 
     // 디버깅용 대화 기록 저장 버튼 생성
@@ -59,10 +62,9 @@ function setup() {
     console.log("setup() 완료");
 }
 
-/**
- * draw() 함수: P5.js 스케치가 매 프레임마다 반복적으로 실행됩니다.
- * 게임 요소 그리기 및 연속적인 업데이트를 처리합니다.
- */
+
+// draw() 함수: P5.js 스케치가 매 프레임마다 반복적으로 실행됩니다.
+// 게임 요소 그리기 및 연속적인 업데이트를 처리합니다.
 function draw() {
     // CSS로 설정된 배경 이미지가 보이도록 매 프레임 캔버스를 투명하게 지웁니다.
     clear(); 
@@ -84,6 +86,7 @@ function draw() {
             text("BAD ENDING", width / 2, height / 2);
         }
         return; // 배드엔딩 상태에서는 다른 게임 요소를 그리지 않음
+
     }
 
     // 게임 상태에 따라 그리기 로직을 분기합니다.
@@ -119,6 +122,7 @@ function draw() {
  * 게임 상태에 따라 다른 마우스 이벤트를 처리합니다.
  */
 function mousePressed() {
+
     if (gameState === "intro") {
         // 인트로 화면의 마우스 클릭은 intro.js에서 직접 처리하고,
         // 게임 상태 전환이 필요한지 여부만 반환받습니다.
@@ -149,4 +153,5 @@ function showMainUI() {
     select('#score-display-container')?.style('display', 'flex');
     select('#input-area')?.style('display', 'flex');
     select('#note-button')?.style('display', 'flex'); // 탐정 노트 버튼도 표시합니다.
+
 }

@@ -68,76 +68,99 @@ function initializeUIElements() {
 
     console.log("initializeUIElements() 완료.");
 }
-
-// 플레이어 입력을 처리하고 AI 응답을 요청합니다.
-// sendButton의 mousePressed 또는 playerInput의 keypress (Enter)에 의해 호출됩니다.
 async function handleUserInput() {
-    // 플레이어 입력 요소 및 값의 유효성을 검사합니다.
-    if (!playerInput || playerInput.value().trim() === '') {
-        console.warn("사용자 입력이 비어있거나 playerInput 요소를 찾을 수 없습니다.");
-        return; 
-    }
-    const userText = playerInput.value().trim(); 
-    
+    if (!isValidInput(playerInput)) return;
+
+    const userText = playerInput.value().trim();
     console.log("handleUserInput() 시작. 사용자 입력:", userText);
 
-    // 1. 플레이어의 질문을 즉시 표시하고 생존자의 응답을 플레이스홀더로 설정합니다.
-    
-    setDialogueText('(그녀는 답변을 고민하고 있다.)', userText); 
-    // 2. 입력 필드를 지웁니다.
-    playerInput.value(''); 
 
-    // Gemini API에서 AI 응답을 요청합니다 (generateContent는 gemini.js에 정의).
-    const aiResponse = await generateContent(userText);
+    setDialogueText('(그녀는 답변을 고민하고 있다.)', userText);
+    playerInput.value('');
+
+    const aiResponse = await generateContent(userText, keyWordReveal, scoreMax, scoreMin, status);
     console.log("AI 응답 받음:", aiResponse);
-    
-    // AI 응답 내용에 따라 긴장도/친밀도 수치 받아옴
-     // sketch.js의 전역 변수 affinityScore 사용
 
     const { affinity, tension, relevance, response } = aiResponse;
 
-    if ( // 타입 검사. 답변 json이 제대로 구성되었는지.
+    if (isValidAIResponse(affinity, tension, relevance, response)) {
+        if (shouldRevealKeyword(relevance)) {
+            updateGameScores(initTensionScore, initAffinityScore);
+            checkStatus();
+            revealKeyWord(response, userText);
+        } else {
+            const updated = processScores(relevance, affinity, tension);
+            updateGameScores(updated.newTension, updated.newAffinity);
+            checkGameOver();
+
+            const tempStatus = status;
+            checkStatus();
+
+            const finalResponse = (tempStatus !== status)
+                ? appendStatusReaction(response)
+                : response;
+
+            setDialogueText(finalResponse, userText);
+        }
+    } else {
+        console.warn("AI 응답 형식이 예상과 다릅니다:", aiResponse);
+        setDialogueText("어... 잠깐만요. 잘 못 들었는데, 다시 한번 말씀해주시겠어요?\n(오류입니다. 새로고침 해주세요.)", userText);
+    }
+
+    updateScoreDisplays();
+    console.log("현재 진행도:", keyWordReveal);
+}
+
+function isValidInput(inputElement) {
+    if (!inputElement || inputElement.value().trim() === '') {
+        console.warn("사용자 입력이 비어있거나 playerInput 요소를 찾을 수 없습니다.");
+        return false;
+    }
+    return true;
+}
+
+function isValidAIResponse(affinity, tension, relevance, response) {
+    return (
         typeof affinity === 'number' &&
         typeof tension === 'number' &&
         typeof relevance === 'number' &&
         typeof response === 'string'
-    )
-    {
-        let newTension = tensionScore;
-        let newAffinity = affinityScore;
+    );
+}
 
-        // 키워드 해금 검사: 관련도가 높고 친밀도랑 긴장도도 높을 시
-        if (relevance >= 70 && tensionScore >= 80 && affinityScore >= 80) 
-        {
-            RevealKeyWord(response, userText);
-            updateGameScores(30, 30);
-            return;
-        }
+function shouldRevealKeyword(relevance) {
+    return relevance >= 70 && affinityScore >= 75 && tensionScore >= 75;
+}
 
-        // 질문의 관련도에 따라 분기.
-        if (relevance <= 20) // 관련도가 낮으면 친밀도, 긴장도 분석 수치에 관계 없이 하락 (10 ~ 30까지 하락)
-        {
-            newTension += relevance - 30;
-            newAffinity += relevance - 30;
-        }
-        else // 그 외의 경우에는 분석된 친밀도와 긴장도 증감을 적용.
-        {
-            newTension += Math.max(-10, Math.min(10, tension));
-            newAffinity += Math.max(-10, Math.min(10, affinity));
-        }
+function processScores(relevance, affinity, tension) {
+    let newTension = tensionScore;
+    let newAffinity = affinityScore;
 
-        // 게임 점수 업데이트 (game-core.js에 정의).
-        updateGameScores(newTension, newAffinity);
-        // 캔버스에 대화 텍스트 설정 (dialogue-manager.js에 정의).
-        setDialogueText(response, userText); 
-
-    } else { // AI 응답 형식이 예상과 다른 경우 처리.
-        console.warn("AI 응답 형식이 예상과 다릅니다:", aiResponse);
-        setDialogueText("어... 잠깐만요. 잘 못 들었는데, 다시 한번 말씀해주시겠어요?\n(오류입니다. 새로고침 해주세요.)", userText);
+    if (relevance <= 20) {
+        const penalty = relevance - 20; // 음수
+        newTension += penalty;
+        newAffinity += penalty;
+    } else {
+        newTension += Math.max(scoreMin, Math.min(scoreMax, tension));
+        newAffinity += Math.max(scoreMin, Math.min(scoreMax, affinity));
     }
-    
-    // 점수 변경 후 HTML UI 점수 표시를 업데이트합니다.
-    updateScoreDisplays(); // 이 파일에 정의됨.
+
+    return { newTension, newAffinity };
+}
+
+function appendStatusReaction(response) {
+    switch (status) {
+        case Status.IDLE:
+            return response + "\n\n(그녀는 경계심을 드러내며 시선을 피했다.)";
+        case Status.TENSION:
+            return response + "\n\n(많이 긴장한 듯 보인다.)";
+        case Status.AFFINITY:
+            return response + "\n\n(마음이 편해진 듯해 보인다. 너무 긴장이 풀린 건 아닌지 우려스럽다.)";
+        case Status.HELPFUL:
+            return response + "\n\n(그녀의 경계심이 풀린 듯 보인다.)";
+        default:
+            return response + "\n\n(그녀의 상태가 바뀌었다.)";
+    }
 }
 
 // 긴장도 및 친밀도 점수를 위한 HTML UI 요소를 업데이트합니다.

@@ -29,12 +29,14 @@ function setupNote() {
   
   textFont('monospace');
 
+
   buttons.push(new Button("사건 개요", 60, 120, () => { currentPage = "사건 개요"; isClosed = false; }));
   buttons.push(new Button("남지연 프로필", 60, 180, () => { currentPage = "남지연 프로필"; isClosed = false; }));
   buttons.push(new Button("키워드 #1", 60, 280, () => { currentPage = "키워드 #1"; isClosed = false; }));
   buttons.push(new Button("키워드 #2", 60, 350, () => { currentPage = "키워드 #2"; isClosed = false; }));
   buttons.push(new Button("키워드 #3", 60, 420, () => { currentPage = "키워드 #3"; isClosed = false; }));
   buttons.push(new Button("닫기", 1170, 60, () => { toggleNote(); }));  // 닫기 버튼
+
 }
 
 // 메인 "탐정 노트" 버튼을 생성합니다.
@@ -51,9 +53,12 @@ function noteButton() {
 // 캔버스 컨테이너와 점수 표시 컨테이너의 z-index를 관리합니다.
 
 function toggleNote() {
-  isClosed = !isClosed;
+  isClosed = !isClosed; // 닫힘 상태 토글
+  console.log("탐정 노트 가시성 토글됨, isClosed:", isClosed);
 
+  // p5CanvasContainer와 scoreDisplayContainerElement는 global-vars.js에 선언, sketch.js에서 할당됩니다.
   if (!p5CanvasContainer || !scoreDisplayContainerElement) {
+
     console.error("p5CanvasContainer 또는 scoreDisplayContainerElement가 초기화되지 않았습니다. z-index를 변경할 수 없습니다.");
     return;
   }
@@ -65,20 +70,26 @@ function toggleNote() {
     return;
   }
 
-  // position 속성도 반드시 지정
+  if (!isClosed) { // 노트가 열리는 경우
+      // 캔버스 컨테이너(P5.js가 그리는 곳)의 z-index를 높게 설정하여 모든 HTML 요소 위에 오도록 합니다.
+      p5CanvasContainer.style('z-index', '999'); 
+      console.log("Canvas z-index set to 999 (Note open)");
+      
+      // 점수 표시 컨테이너의 z-index를 낮게 설정하여 노트 뒤로 숨깁니다.
+      // 이것은 사라지는 것이 아니라, 노트 뒤에 가려져 보이게 하는 것입니다.
+      scoreDisplayContainerElement.style('z-index', '0'); 
+      console.log("Score Display z-index set to 0 (Note open)");
 
-  if (!isClosed) { // 노트가 열릴 때
-    //p5CanvasContainer.style('z-index', '999');
-    scoreDisplayContainerElement.style('z-index', '0');
-    inputContainer.style('z-index', '0'); // 입력창을 노트 아래로!
-  } else { // 노트가 닫힐 때
-    p5CanvasContainer.style('z-index', '1');
-    scoreDisplayContainerElement.style('z-index', '15');
-    inputContainer.style('z-index', '15'); // 입력창을 다시 위로!
+  } else { // 노트가 닫히는 경우
+      // 캔버스 컨테이너의 z-index를 기본값으로 재설정합니다.
+      p5CanvasContainer.style('z-index', '1'); 
+      console.log("Canvas z-index set to 1 (Note closed)");
+
+      // 점수 표시 컨테이너의 z-index를 원래 값으로 재설정합니다 (style.css에서 정의된 값).
+      scoreDisplayContainerElement.style('z-index', '15'); 
+      console.log("Score Display z-index set to 15 (Note closed)");
   }
 }
-
-
 
 
 function drawNote() {
@@ -95,7 +106,7 @@ function drawNote() {
     } else if (currentPage === "키워드 #2") {
       imgToShow = keywordUnlocked["키워드 #2"] ? keyword2Image : keyword2undefinedImage;
     } else if (currentPage === "키워드 #3") {
-      imgToShow = keywordUnlocked["키워드 #3"] ? keyword3Image : keyword3undefinedImage; // 없는 경우 대체
+      imgToShow = keywordUnlocked["키워드 #3"] ? keyword3Image : keyword2undefinedImage; // 없는 경우 대체
     }
   
     image(imgToShow, 0, 0, width, height);

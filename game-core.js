@@ -1,8 +1,11 @@
-// 이 파일은 점수 업데이트와 관련된 핵심 게임 로직을 포함합니다.More actions
+
+// 이 파일은 점수 업데이트와 관련된 핵심 게임 로직을 포함합니다.
+
 // global-vars.js의 tensionScore 및 affinityScore 변수를 사용합니다.
 
 // 게임 점수(긴장도 및 친밀도)를 업데이트합니다.
 // conversation-UI.js의 handleUserInput() 함수에서 호출됩니다.
+
 
 let badEndingImage0, badEndingImageTension, badEndingImageAffinity;
 
@@ -36,6 +39,7 @@ function checkGameOver() {
     }
     else if (affinityScore >= 100 && affinityScore - tensionScore >= difference * 2) {
         badEndingType = "affinity";
+
         console.log("배드엔딩 - 친밀도 100");
     }
 }

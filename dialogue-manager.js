@@ -4,6 +4,7 @@
 // P5.js 캔버스에 대화 텍스트를 그립니다.
 // sketch.js의 draw() 함수에서 호출됩니다.
 
+
 let dialogueBoxImg;
 
 function preload() {
