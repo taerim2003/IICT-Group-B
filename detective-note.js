@@ -26,20 +26,15 @@ function preloadNote() {
 }
 
 function setupNote() {
-    textFont('monospace');
+  
+  textFont('monospace');
 
-    buttons.push(new Button("사건 개요", 60, 120, () => { currentPage = "사건 개요"; isClosed = false; }));
-    buttons.push(new Button("남지연 프로필", 60, 180, () => { currentPage = "남지연 프로필"; isClosed = false; }));
-    buttons.push(new Button("키워드 #1", 60, 280, () => { currentPage = "키워드 #1"; isClosed = false; }));
-    buttons.push(new Button("키워드 #2", 60, 350, () => { currentPage = "키워드 #2"; isClosed = false; }));
-    buttons.push(new Button("키워드 #3", 60, 420, () => { currentPage = "키워드 #3"; isClosed = false; }));
-
-    // ⭐ THIS IS THE LINE TO CHANGE ⭐
-    // Change the onClick handler for the "닫기" (Close/X) button
-    buttons.push(new Button("닫기", 1170, 60, () => {
-        toggleNote(); // ⭐ Call toggleNote() here instead of just setting isClosed = true;
-    }));
-}
+  buttons.push(new Button("사건 개요", 60, 120, () => { currentPage = "사건 개요"; isClosed = false; }));
+  buttons.push(new Button("남지연 프로필", 60, 180, () => { currentPage = "남지연 프로필"; isClosed = false; }));
+  buttons.push(new Button("키워드 #1", 60, 280, () => { currentPage = "키워드 #1"; isClosed = false; }));
+  buttons.push(new Button("키워드 #2", 60, 350, () => { currentPage = "키워드 #2"; isClosed = false; }));
+  buttons.push(new Button("키워드 #3", 60, 420, () => { currentPage = "키워드 #3"; isClosed = false; }));
+  buttons.push(new Button("닫기", 1170, 60, () => { toggleNote(); }));  // 닫기 버튼
 
 // 메인 "탐정 노트" 버튼을 생성합니다.
 // sketch.js의 setup() 함수에서 호출됩니다.
@@ -52,34 +47,36 @@ function noteButton() {
 
 // 탐정 노트의 가시성을 토글합니다.
 // 캔버스 컨테이너와 점수 표시 컨테이너의 z-index를 관리합니다.
-// 탐정 노트의 가시성을 토글합니다.
-// 캔버스 컨테이너와 점수 표시 컨테이너의 z-index를 관리합니다.
+
 function toggleNote() {
-    isClosed = !isClosed;
+  isClosed = !isClosed;
 
-    if (!p5CanvasContainer || !scoreDisplayContainerElement) {
-        console.error("p5CanvasContainer 또는 scoreDisplayContainerElement가 초기화되지 않았습니다. z-index를 변경할 수 없습니다.");
-        return;
-    }
+  if (!p5CanvasContainer || !scoreDisplayContainerElement) {
+    console.error("p5CanvasContainer 또는 scoreDisplayContainerElement가 초기화되지 않았습니다. z-index를 변경할 수 없습니다.");
+    return;
+  }
 
-    // 입력창 컨테이너 선택
-    let inputContainer = select('#input-area'); // Changed to #input-area as per index.html structure
-    if (!inputContainer) {
-        console.warn("입력창 컨테이너(#input-area)를 찾을 수 없습니다.");
-        return;
-    }
+  // 입력창 컨테이너 선택 (id가 다르면 실제 id로 바꿔주세요)
+  let inputContainer = select('#input-area'); // 혹은 select('#player-input').parent()
+  if (!inputContainer) {
+    console.warn("입력창 컨테이너(#input-container)를 찾을 수 없습니다.");
+    return;
+  }
 
-    // ⭐ 핵심 변경: 노트가 열릴 때 p5CanvasContainer의 z-index를 가장 높게 설정합니다.
-    if (!isClosed) { // 노트가 열릴 때
-        p5CanvasContainer.style('z-index', '999'); // 가장 높은 z-index로 설정
-        scoreDisplayContainerElement.style('z-index', '0'); // 점수 컨테이너를 뒤로
-        inputContainer.style('z-index', '0'); // 입력창 컨테이너를 뒤로
-    } else { // 노트가 닫힐 때
-        p5CanvasContainer.style('z-index', '1'); // 기본 z-index로 복원
-        scoreDisplayContainerElement.style('z-index', '15'); // 점수 컨테이너를 앞으로
-        inputContainer.style('z-index', '10'); // 입력창 컨테이너를 앞으로 (score-display-container보다 낮게, p5CanvasContainer보다 높게)
-    }
+  // position 속성도 반드시 지정
+
+  if (!isClosed) { // 노트가 열릴 때
+    //p5CanvasContainer.style('z-index', '999');
+    scoreDisplayContainerElement.style('z-index', '0');
+    inputContainer.style('z-index', '0'); // 입력창을 노트 아래로!
+  } else { // 노트가 닫힐 때
+    p5CanvasContainer.style('z-index', '1');
+    scoreDisplayContainerElement.style('z-index', '15');
+    inputContainer.style('z-index', '15'); // 입력창을 다시 위로!
+  }
 }
+
+
 
 
 function drawNote() {
@@ -123,6 +120,7 @@ function drawNote() {
     btn.display();
   }
 }
+
 
 function mousePressedNote() {
   for (let btn of buttons) {

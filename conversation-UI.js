@@ -173,6 +173,7 @@ function updateScoreDisplays() {
         }, 500); // 빛나는 효과 지속 시간: 0.5초
     });
 
+
     // ⭐ 숫자가 항상 보이도록 바로 업데이트
     tensionValueDisplay.html(tensionScore); 
     affinityValueDisplay.html(affinityScore); 
@@ -229,4 +230,5 @@ function RevealKeyWord(response, userText)
         default:
             break;
     }
+
 }

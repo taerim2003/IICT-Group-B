@@ -50,12 +50,14 @@ function setup() {
     // 게임 시작 시 초기 대화 메시지 설정
     setDialogueText('', '');
 
+
     // 초기 수치 표시 업데이트
     updateScoreDisplays();
 
     // 탐정 노트 셋업 및 버튼 생성
     noteButton();
     setupNote();
+
 
     console.log("setup() 완료");
 }
@@ -67,6 +69,26 @@ function draw() {
     // 캔버스를 매 프레임마다 투명하게 지웁니다.
     // 이렇게 해야 CSS로 설정된 배경 이미지가 계속 보입니다.
     clear(); 
+
+    if (badEndingType) {
+        let img;
+        if (badEndingType === "zero") img = badEndingImage0;
+        else if (badEndingType === "tension") img = badEndingImageTension;
+        else if (badEndingType === "affinity") img = badEndingImageAffinity;
+
+        if (img) {
+            image(img, 0, 0, width, height);
+        } else {
+            background(0);
+            fill(255, 0, 0);
+            textSize(48);
+            textAlign(CENTER, CENTER);
+            text("BAD ENDING", width / 2, height / 2);
+        }
+        return; // 배드엔딩 상태에서는 다른 게임 요소 그리지 않음
+    }
+
+
     if (gameState === "intro") {
         hideMainUI();
         drawIntro();  // 인트로 화면만 그림
