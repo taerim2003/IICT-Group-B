@@ -21,7 +21,7 @@ function extractJsonFromString(text) {
 
 // Gemini API를 사용하여 콘텐츠를 생성하는 메인 함수입니다.
 // conversation-UI.js의 handleUserInput() 함수에서 호출됩니다.
-async function generateContent(userMsg, keyWordReveal, scoreRange, status) {
+async function generateContent(userMsg, keyWordReveal, scoreMin, scoreMax, status) {
 
     // 사용자의 입력을 대화 기록에 추가합니다 (gemini-data.js에서 참조).
     conversationHistory.add('user', userMsg);
@@ -38,7 +38,8 @@ async function generateContent(userMsg, keyWordReveal, scoreRange, status) {
 
         const filledPrompt = fillSystemPrompt(SYSTEM_PROMPT, {
             keyWordReveal,
-            scoreRange,
+            scoreMin, 
+            scoreMax,
             status
         });
 

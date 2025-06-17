@@ -30,12 +30,12 @@ function setupNote() {
   textFont('monospace');
 
 
-  buttons.push(new Button("사건 개요", 60, 120, () => { currentPage = "사건 개요"; isClosed = false; }));
-  buttons.push(new Button("남지연 프로필", 60, 180, () => { currentPage = "남지연 프로필"; isClosed = false; }));
-  buttons.push(new Button("키워드 #1", 60, 280, () => { currentPage = "키워드 #1"; isClosed = false; }));
-  buttons.push(new Button("키워드 #2", 60, 350, () => { currentPage = "키워드 #2"; isClosed = false; }));
-  buttons.push(new Button("키워드 #3", 60, 420, () => { currentPage = "키워드 #3"; isClosed = false; }));
-  buttons.push(new Button("닫기", 1170, 60, () => { toggleNote(); }));  // 닫기 버튼
+  buttons.push(new Button("사건 개요", 60, 120, 230, 80, () => { currentPage = "사건 개요"; isClosed = false; }));
+  buttons.push(new Button("남지연 프로필", 60, 180, 230, 80,() => { currentPage = "남지연 프로필"; isClosed = false; }));
+  buttons.push(new Button("키워드 #1", 60, 280, 230, 80, () => { currentPage = "키워드 #1"; isClosed = false; }));
+  buttons.push(new Button("키워드 #2", 60, 350, 230, 80,() => { currentPage = "키워드 #2"; isClosed = false; }));
+  buttons.push(new Button("키워드 #3", 60, 420, 230, 80,() => { currentPage = "키워드 #3"; isClosed = false; }));
+  buttons.push(new Button("닫기", 1150, 50, 70, 50, () => { toggleNote(); }));  // 닫기 버튼
 
 }
 
@@ -150,18 +150,18 @@ function noteButtonPressed()
 }
 
 class Button {
-  constructor(label, x, y, onClick) {
+  constructor(label, x, y, w, h, onClick) {
     this.label = label;
     this.x = x;
     this.y = y;
-    this.w = 250;
-    this.h = 80;
+    this.w = w;
+    this.h = h;
     this.onClick = onClick;
   }
 
   display() {
     noStroke();
-    noFill();
+    noFill();      
     // rect(this.x, this.y, this.w, this.h); // 디버깅용 클릭 영역
     fill(255,0); // 텍스트도 투명
     textSize(20);
@@ -174,6 +174,7 @@ class Button {
            mouseY > this.y && mouseY < this.y + this.h;
   }
 }
+
 
 function unlockKeyword(keywordName) {
   keywordUnlocked[keywordName] = true;

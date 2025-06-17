@@ -59,6 +59,9 @@ function setup() {
     noteButton();
     setupNote();
 
+    // 도움말 UI 셋업
+    createHelpButton();
+
     console.log("setup() 완료");
 }
 
@@ -114,6 +117,9 @@ function draw() {
 
         // 탐정 노트를 그립니다 (detective-note.js에 정의).
         drawNote();
+
+        // 도움말 창을 그립니다.
+        drawHelpUI();
     }
 }
 
@@ -134,6 +140,7 @@ function mousePressed() {
     } else {
         // 메인 게임 상태에서는 탐정 노트 관련 마우스 이벤트를 처리합니다.
         mousePressedNote(); // detective-note.js의 함수 호출
+        handleHelpMousePressed();
     }
 }
 

@@ -44,7 +44,17 @@ function loadCharacterImages() {
     backgroundImages[3] = loadImage('assets/background_4.png', // 3번째 키워드 해금 후 배경
         () => console.log("배경 이미지 4 로드 성공!"),
         (event) => { console.error("배경 이미지 4 로드 실패: 'assets/background_4.jpg'", event); });
-}
+
+    catImage_idle = loadImage('assets/cat_idle.png', 
+        () => console.log("고양이 idle 로드 성공!"),
+        (event) => { console.error("고양이 idle 로드 실패: 'assets/cat_idle.png'", event); });
+    catImage_smiling = loadImage('assets/cat_smiling.png', 
+        () => console.log("고양이 smiling 로드 성공!"),
+        (event) => { console.error("고양이 smiling 로드 실패: 'assets/cat_smiling.png'", event); });
+        question_mark_image = loadImage('assets/question_mark.png', 
+        () => console.log("물음표 로드 성공!"),
+        (event) => { console.error("물음표 로드 실패: 'assets/question_mark.png'", event); });
+}   
 
 // 캔버스에 캐릭터 이미지를 그리는 함수입니다.
 // sketch.js의 draw() 함수에서 호출됩니다.
