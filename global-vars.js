@@ -42,7 +42,13 @@ let status = Status.IDLE;
 // 배드엔딩 유형 (null, "zero", "tension", "affinity") - global-vars.js에 추가
 let badEndingType = null;
 
+let lines = []; // 현재 화면에 타이핑될 대화/브리핑 텍스트 줄 (인트로/키워드 브리핑에서 사용)
 
+let briefingScene = 0; // 키워드 브리핑 장면 상태 (0: 비활성, 1: 키워드1 브리핑, 2: 키워드2 브리핑, 3: 키워드3 브리핑)
+let isBriefingActive = false; // 현재 키워드 브리핑 모드인지 여부 (true면 브리핑 중)
+let showNoteNotification = false; // 탐정 노트 알림을 표시할지 여부
+let noteNotificationText = ""; // 탐정 노트 알림에 표시될 텍스트
+let keywordBriefingPending = false; // 키워드 브리핑 화면으로 전환 대기 중인지 여부
 // 대화 텍스트 (dialogue-manager.js에서 관리)
 let currentSurvivorText = ''; // 현재 생존자의 답변
 let currentPlayerText = '';   // 현재 플레이어의 질문

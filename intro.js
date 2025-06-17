@@ -1,7 +1,7 @@
 // intro.js
 
 let scene = 0; // 인트로 장면 상태 (0: 초기 대화, 1: 게임 시작 대화)
-let lines = []; // 현재 장면에 해당하는 대화 텍스트 배열
+//let lines = []; // 현재 장면에 해당하는 대화 텍스트 배열
 let displayedText = ""; // 현재 화면에 타이핑되어 표시될 텍스트
 let charIndex = 0; // 현재 줄에서 타이핑될 글자 인덱스
 let lineIndex = 0; // 현재 타이핑 중인 대화 줄 인덱스
@@ -102,7 +102,15 @@ function drawButton() {
         textSize(24); // 버튼 텍스트 크기
         textAlign(CENTER, CENTER); // 버튼 텍스트 중앙 정렬
         
-        let label = (scene === 0) ? "수사 시작" : "게임 시작"; // 장면에 따른 라벨 변경
+        let label;
+        if (gameState === "intro") { // 인트로 모드일 때
+            label = (scene === 0) ? "수사 시작" : "게임 시작"; 
+        } else if (gameState === "keywordBriefing") { // 키워드 브리핑 모드일 때
+            label = "다음"; 
+        } else { // 기타 (예상치 못한 경우)
+            label = "다음"; 
+        }
+         
         text(label, width / 2, btnY + btnH / 2); // 버튼 텍스트 그리기
 
         // **중요: 클릭 판정을 위해 button 객체의 속성을 업데이트합니다.**
@@ -117,7 +125,9 @@ function drawButton() {
 // 장면 전환 함수
 function changeScene(newScene) {
     scene = newScene;
+    if (gameState === "intro"){
     lines = getSceneLines(scene); // 새 장면의 대화 내용 로드
+    }
     displayedText = ""; // 표시된 텍스트 초기화
     charIndex = 0; // 글자 인덱스 초기화
     lineIndex = 0; // 줄 인덱스 초기화
@@ -129,7 +139,7 @@ function changeScene(newScene) {
 function getSceneLines(scene) {
     if (scene === 0) {
         return [
-            "Case 2: 장이섬",
+            "Case 1: 장이섬",
             "2100년 5월 24일 18시경, 인적이 드문 장이섬 산속",
             "밖에서 문이 잠긴 건물에 화재가 발생했습니다.",
             "현장에서 반 학생 전원, 교장 박성철, 교사 고유미가 사망한 채 발견되었습니다.",
@@ -200,15 +210,22 @@ function handleIntroScreenClick() {
         mouseX > button.x && mouseX < button.x + button.width &&
         mouseY > button.y && mouseY < button.y + button.height
     ) {
-        if (scene === 0) {
-            // '수사 시작' 버튼 클릭 -> 장면 1로 전환
-            changeScene(1);
-            console.log("인트로 장면 0 -> 1 전환 (수사 시작)");
-            return false; // 여전히 인트로 진행 중 (두 번째 인트로 장면)
-        } else if (scene === 1) {
-            // '게임 시작' 버튼 클릭 -> 메인 게임으로 전환
-            console.log("인트로 완료: 메인 게임으로 전환 요청 (게임 시작)");
-            return true; // 이제 메인 게임으로 전환해야 함을 알림
+        if (gameState === "intro"){ //현재 게임 상태가 "intro"일 때의 로직
+            if (scene === 0) {
+                // '수사 시작' 버튼 클릭 -> 장면 1로 전환
+                changeScene(1);
+                console.log("인트로 장면 0 -> 1 전환 (수사 시작)");
+                return false; // 여전히 인트로 진행 중 (두 번째 인트로 장면)
+            } else if (scene === 1) {
+                // '게임 시작' 버튼 클릭 -> 메인 게임으로 전환
+                console.log("인트로 완료: 메인 게임으로 전환 요청 (게임 시작)");
+                return true; // 이제 메인 게임으로 전환해야 함을 알림
+            }
+        } else if (gameState === "keywordBriefing"){ //현재 게임 상태가 "keywordBriefing"일 때의 로직
+            console.log('장면 전환 내용 정리 완료: 다음 배경으로 전환 및 심문 재개.');
+            isBriefingActive = false; // 브리핑 비활성화
+            //sketch.js에서 gameState를 "main"으로 변경하고 배경 전환
+            return true;
         }
     }
     return false; // 아무것도 발생하지 않았거나, 버튼 클릭이 아닌 다른 영역 클릭
