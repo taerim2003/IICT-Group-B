@@ -255,7 +255,8 @@ function revealKeyWord(response, userText)
     // 브리핑 모드 활성화 및 장면 인덱스 설정
     keywordBriefingPending = true; 
     briefingScene = keyWordReveal; // 1이면 키워드1 브리핑, 2이면 키워드2 브리핑...
-    
+    hideMainUI();
+
     console.log(`키워드 해금됨: ${keywordId}. 브리핑 화면 전환 대기 중.`);
     // 브리핑 화면 타이핑 효과를 위한 변수 초기화는 sketch.js의 mousePressed에서 gameState 변경 시 수행됩니다.
 }

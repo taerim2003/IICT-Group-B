@@ -171,37 +171,41 @@ function mousePressed() {
         if (shouldTransition) {
             if (gameState === "intro"){
                 gameState = "main"; // 메인 게임으로 전환
+                showMainUI();
                 console.log("게임 상태가 'main'으로 전환되었습니다.");
             } else if (gameState === "keywordBriefing"){
                 gameState = "main"; //메인 게임으로 전환
                 // 키워드 해금 뒤 다음 장면 전환
+                showMainUI();
                 currentSceneIndex = (currentSceneIndex + 1) % backgroundImages.length; //다음 배경으로
                 console.log(`게임 상태 'main'으로 복귀. 배경 전환: ${currentSceneIndex}`);
 
             // 키워드 브리핑 완료 후, 탐정 노트 알림 활성화
                 if (keyWordReveal > 0) { // 최소한 하나의 키워드가 해금된 경우
-                    showNoteNotification = true;
+                    newKeywordUnlockedNotification = true; 
+                    //showNoteNotification = true;
                     noteNotificationText = `새로운 키워드 [키워드 #${keyWordReveal}]가 탐정 노트에 해금되었습니다!`;
                     console.log("탐정 노트 알림 활성화:", noteNotificationText);
                 }
             }
         }
-
-    } else {
-        // 알림이 표시되어 있을 때 알림 클릭 처리
-        if (showNoteNotification) {
-            // 알림 영역을 클릭했는지 확인 (대략적인 위치로 설정)
-            let notifX = width / 2 - 200;
-            let notifY = height / 2 - 50;
-            let notifW = 400;
-            let notifH = 100;
-            if (mouseX > notifX && mouseX < notifX + notifW &&
-                mouseY > notifY && mouseY < notifY + notifH) {
-                showNoteNotification = false; // 알림 닫기
-                console.log("탐정 노트 알림 닫힘.");
-                return; // 알림을 닫았으므로 다른 mousePressed 로직은 실행하지 않음
-            }
+        return;
+    }   
+    
+    // 알림이 표시되어 있을 때 알림 클릭 처리
+    if (gameState === "main" && showNoteNotification) {
+        // 알림 영역을 클릭했는지 확인 (대략적인 위치로 설정)
+        let notifX = width / 2 - 200;
+        let notifY = height / 2 - 50;
+        let notifW = 400;
+        let notifH = 100;
+        if (mouseX > notifX && mouseX < notifX + notifW &&
+            mouseY > notifY && mouseY < notifY + notifH) {
+            showNoteNotification = false; // 알림 닫기
+            console.log("탐정 노트 알림 닫힘.");
+            return; // 알림을 닫았으므로 다른 mousePressed 로직은 실행하지 않음
         }
+    }
         // 키워드 브리핑 대기 중일 때, 클릭 시 브리핑으로 전환
         // 이 조건은 알림 닫기 로직 다음에 와야 합니다.
         if (keywordBriefingPending) {
@@ -211,7 +215,7 @@ function mousePressed() {
             console.log("브리핑 대기 중: 클릭 감지. 키워드 브리핑 모드로 전환.");
             gameState = "keywordBriefing"; // 키워드 브리핑 모드로 전환
             keywordBriefingPending = false; // 대기 상태 해제
-            hideMainUI();
+            //hideMainUI();
 
             // 브리핑 화면 타이핑 효과를 위한 변수 초기화
             displayedText = ""; 
@@ -230,7 +234,6 @@ function mousePressed() {
         }
         handleHelpMousePressed();
     }
-}
 
 // 탐정 노트 알림을 그리는 함수
 function drawNoteNotification() {
@@ -262,35 +265,32 @@ function drawNoteNotification() {
 /**
  * 메인 게임 UI를 숨기는 함수입니다.
  */
+// sketch.js (확인해주세요)
+
 function hideMainUI() {
     select('#score-display-container')?.style('display', 'none');
-     const inputArea = select('#input-area');
+    const inputArea = select('#input-area');
     if (inputArea) {
-        inputArea.style('display', 'none');
-        // 입력 필드와 버튼도 직접 비활성화 (disabled 속성)
-        select('#player-input')?.attribute('disabled', true);
-        select('#send-button')?.attribute('disabled', true);
+        inputArea.style('display', 'none'); 
+        // ✅ 이 부분이 input disabled 처리
+        select('#player-input')?.attribute('disabled', true); 
+        select('#send-button')?.attribute('disabled', true); 
     }
-    if (detectiveNoteP5Button) { // 버튼 인스턴스가 존재하는지 확인
-        detectiveNoteP5Button.hide(); // P5.js DOM 엘리먼트의 hide() 메서드 사용
+    if (detectiveNoteP5Button) { 
+        detectiveNoteP5Button.hide(); 
     }
 }
 
-/**
- * 메인 게임 UI를 표시하는 함수입니다.
- */
 function showMainUI() {
     select('#score-display-container')?.style('display', 'flex');
-    select('#input-area')?.style('display', 'flex');
-    // 입력창(#input-area)과 그 안의 요소들을 모두 표시하고 활성화합니다.
     const inputArea = select('#input-area');
     if (inputArea) {
         inputArea.style('display', 'flex');
-        // 입력 필드와 버튼도 직접 활성화 (disabled 속성 제거)
-        select('#player-input')?.removeAttribute('disabled');
-        select('#send-button')?.removeAttribute('disabled');
+        // ✅ 이 부분이 input 활성화 처리
+        select('#player-input')?.removeAttribute('disabled'); 
+        select('#send-button')?.removeAttribute('disabled'); 
     }
-     if (detectiveNoteP5Button) { // 버튼 인스턴스가 존재하는지 확인
-        detectiveNoteP5Button.show(); // P5.js DOM 엘리먼트의 show() 메서드 사용
+    if (detectiveNoteP5Button) { 
+        detectiveNoteP5Button.show(); 
     }
 }
