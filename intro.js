@@ -139,7 +139,7 @@ function changeScene(newScene) {
 function getSceneLines(scene) {
     if (scene === 0) {
         return [
-            "Case 1: 장이섬",
+            "Case 1: 장이섬\n",
             "2100년 5월 24일 18시경, 인적이 드문 장이섬 산속",
             "밖에서 문이 잠긴 건물에 화재가 발생했습니다.",
             "현장에서 반 학생 전원, 교장 박성철, 교사 고유미가 사망한 채 발견되었습니다.",
