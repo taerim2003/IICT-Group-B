@@ -13,7 +13,7 @@
     <script src="libraries/p5.sound.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.dom.min.js"></script>
     
-    <!-- ⭐⭐ global-vars.js는 다른 모든 사용자 정의 JS 파일보다 반드시 먼저 로드되어야 합니다. ⭐⭐ -->
+    <!--global-vars.js는 다른 모든 사용자 정의 JS 파일보다 반드시 먼저 로드-->
     <script src="global-vars.js"></script>
 
 </head>
@@ -32,14 +32,14 @@
                 긴장도: 
                 <div class="score-bar-container">
                     <div id="anxiety-bar" class="score-bar"></div>
-                    <span id="anxiety-value" class="score-value-hidden">0</span> <!-- ⭐ style="display: none;" 제거 -->
+                    <span id="anxiety-value" class="score-value-hidden">0</span> 
                 </div>
             </div>
             <div id="affinity-score-display" class="score-display">
                 친밀도: 
                 <div class="score-bar-container">
                     <div id="affinity-bar" class="score-bar"></div>
-                    <span id="affinity-value" class="score-value-hidden">0</span> <!-- ⭐ style="display: none;" 제거 -->
+                    <span id="affinity-value" class="score-value-hidden">0</span> 
                 </div>
             </div>
         </div>
@@ -55,9 +55,11 @@
     <script src="dialogue-manager.js"></script> 
     <script src="game-core.js"></script> 
     <script src="game-utilities.js"></script> 
-    <script src="detective-note.js"></script>
     <script src="conversation-UI.js"></script>
+    <script src="detective-note.js"></script>
     <script src="intro.js"></script>
+    <script src="help-message.js"></script>
+    <script src="start.js"></script>
     <script src="sketch.js"></script>
 </body>
 </html>
