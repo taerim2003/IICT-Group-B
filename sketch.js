@@ -87,7 +87,7 @@ function draw() {
     hideMainUI();
     drawStartScreen(); // ✅ start.js에서 정의된 시작 화면 그리기 함수
     return;
-}
+    }
 
     // 배드엔딩 유형에 따라 해당 이미지를 표시하고 그리기를 종료합니다.
     if (badEndingType) {
@@ -119,6 +119,10 @@ function draw() {
         drawKeywordBriefing();
         return;
     } 
+    else if (gameState === "ending" && endingActive) {
+        drawEndingSequence();
+        return;
+    }
     else { // gameState === "main"
         showMainUI(); // 메인 게임 상태에서는 UI를 표시합니다.
         
@@ -160,7 +164,7 @@ function draw() {
 function mousePressed() {
 
     if (gameState === "start") {
-        const shouldGoToIntro = handleStartScreenClick();
+        let shouldGoToIntro = handleStartScreenClick();
         if (shouldGoToIntro) {
             gameState = "intro";
             console.log("게임 상태가 'intro'로 전환되었습니다.");
@@ -170,7 +174,7 @@ function mousePressed() {
     if (gameState === "intro") {
         // 인트로 화면의 마우스 클릭은 intro.js에서 직접 처리하고,
         // 게임 상태 전환이 필요한지 여부만 반환받습니다.
-        const shouldTransition = handleIntroScreenClick(); // intro.js의 함수 호출
+        let shouldTransition = handleIntroScreenClick(); // intro.js의 함수 호출
         if (shouldTransition) {
             if (gameState === "intro"){
                 gameState = "main"; // 메인 게임으로 전환
@@ -184,12 +188,22 @@ function mousePressed() {
     {
         let trns = handleKeywordBriefingClick();
         if (trns) {
-            gameState = "main"; //메인 게임으로 전환
-            // 키워드 해금 뒤 다음 장면 전환
-            showMainUI();
-            currentSceneIndex = (currentSceneIndex + 1) % backgroundImages.length; //다음 배경으로
-            console.log(`게임 상태 'main'으로 복귀. 배경 전환: ${currentSceneIndex}`);
-
+            // 엔딩이왜안될까
+            if (keyWordReveal >= 3) 
+            {   
+                gameState = "ending";
+                setupEndingSequence();
+                endingActive = true;
+                return;
+            }
+            else
+            {
+                gameState = "main"; //메인 게임으로 전환
+                // 키워드 해금 뒤 다음 장면 전환
+                showMainUI();
+                currentSceneIndex = (currentSceneIndex + 1) % backgroundImages.length; //다음 배경으로
+                console.log(`게임 상태 'main'으로 복귀. 배경 전환: ${currentSceneIndex}`);
+            }
         // 키워드 브리핑 완료 후, 탐정 노트 알림 활성화
             if (keyWordReveal > 0) { // 최소한 하나의 키워드가 해금된 경우
                 newKeywordUnlockedNotification = true; 
@@ -198,6 +212,10 @@ function mousePressed() {
                 console.log("탐정 노트 알림 활성화:", noteNotificationText);
             }
         }
+    }
+    else if (gameState === "ending")
+    {
+        handleEndingSequenceClick();
     }
     
     // 알림이 표시되어 있을 때 알림 클릭 처리
