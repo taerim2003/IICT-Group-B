@@ -20,8 +20,8 @@ let backgroundImages = [];
 let currentSceneIndex = 0; 
 
 // 게임 점수 (game-core.js 및 conversation-UI.js에서 업데이트)
-const initTensionScore = 70;
-const initAffinityScore = 70;
+const initTensionScore = 40;
+const initAffinityScore = 40;
 const scoreMax = 20;
 const scoreMin = -5;
 const difference = 20;
