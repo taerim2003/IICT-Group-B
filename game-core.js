@@ -44,6 +44,36 @@ function checkGameOver() {
     }
 }
 
+function revealKeyWord(response, userText)
+{
+    switch (keyWordReveal)
+    {
+        case 0:
+            // 1번 키워드
+            setDialogueText(response + "\n\n저, 수사관님. 수사에 도움이 될진 모르겠지만 말씀드리고 싶은 것이 있는데요...\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
+            keyWordReveal++;
+            unlockKeyword("키워드 #1");
+            console.log(keywordUnlocked)
+            break;
+        case 1:
+            // 2번 키워드
+            setDialogueText(response + "\n\n그런데 수사관님. 혹시 이 정보가 도움이 될까요?\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
+            keyWordReveal++;
+            unlockKeyword("키워드 #2");
+            console.log(keywordUnlocked)
+            break;
+        case 2:
+            // 3번 키워드
+            setDialogueText(response + "\n\n그런데 저, 그, 사실은... 아까 미처 말씀 못 드린 부분이 있는데...\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
+            keyWordReveal++;
+            unlockKeyword("키워드 #3");
+            console.log(keywordUnlocked)
+            break;
+        default:
+            break;
+    }
+
+}
 
 function checkStatus() {
     if (tensionScore - affinityScore >= difference) {

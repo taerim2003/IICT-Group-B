@@ -6,6 +6,8 @@ let keywordUnlocked = {
 let keyword1Image, keyword1undefinedImage;
 let keyword2Image, keyword2undefinedImage;
 let keyword3Image, keyword3undefinedImage;
+// HTML 노트 컨테이너를 숨기거나 표시하는 변수
+
 
 function preloadNote() {
   bgImage = loadImage("assets/note.jpg");
@@ -24,6 +26,7 @@ function preloadNote() {
     "남지연 프로필": namjiyeonImage
   };
 }
+
 
 function setupNote() {
   
@@ -74,19 +77,19 @@ function toggleNote() {
       // 캔버스 컨테이너(P5.js가 그리는 곳)의 z-index를 높게 설정하여 모든 HTML 요소 위에 오도록 합니다.
       p5CanvasContainer.style('z-index', '999'); 
       console.log("Canvas z-index set to 999 (Note open)");
-      
+
       // 점수 표시 컨테이너의 z-index를 낮게 설정하여 노트 뒤로 숨깁니다.
       // 이것은 사라지는 것이 아니라, 노트 뒤에 가려져 보이게 하는 것입니다.
-      scoreDisplayContainerElement.style('z-index', '0'); 
+    scoreDisplayContainerElement.style('z-index', '0');
       console.log("Score Display z-index set to 0 (Note open)");
 
   } else { // 노트가 닫히는 경우
       // 캔버스 컨테이너의 z-index를 기본값으로 재설정합니다.
-      p5CanvasContainer.style('z-index', '1'); 
+    p5CanvasContainer.style('z-index', '1');
       console.log("Canvas z-index set to 1 (Note closed)");
 
       // 점수 표시 컨테이너의 z-index를 원래 값으로 재설정합니다 (style.css에서 정의된 값).
-      scoreDisplayContainerElement.style('z-index', '15'); 
+    scoreDisplayContainerElement.style('z-index', '15');
       console.log("Score Display z-index set to 15 (Note closed)");
   }
 }
@@ -143,11 +146,11 @@ function mousePressedNote() {
   }
 }
 
-function noteButtonPressed()
+/*function noteButtonPressed()
 {
     isClosed = !isClosed;
     console.log(isClosed);
-}
+}*/
 
 class Button {
   constructor(label, x, y, w, h, onClick) {

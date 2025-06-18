@@ -90,9 +90,9 @@ async function handleUserInput() {
 
     if (isValidAIResponse(affinity, tension, relevance, response)) {
         if (shouldRevealKeyword(relevance)) {
-            updateGameScores(initTensionScore, initAffinityScore);
             checkStatus();
             revealKeyWord(response, userText);
+
         } else {
             const updated = processScores(relevance, affinity, tension);
             updateGameScores(updated.newTension, updated.newAffinity);
@@ -210,31 +210,55 @@ function updateScoreDisplays() {
 
 function revealKeyWord(response, userText)
 {
+    if (keyWordReveal >= 3) {
+        console.log("모든 키워드가 이미 공개되었습니다. 추가 키워드 없음.");
+        checkGameClear();
+        return;
+    }
+
+    let briefingContent = ""; // 브리핑 화면에 표시될 내용
+    let keywordId = "";
+    let characterSpecificText = ""; //캐릭터가 말할 특정 메시지
+
+    //키워드 해금 후 점수 여기서 적용
+    updateGameScores(initTensionScore, initAffinityScore);
+
     switch (keyWordReveal)
     {
         case 0:
-            // 1번 키워드
-            setDialogueText(response + "\n\n저, 수사관님. 수사에 도움이 될진 모르겠지만 말씀드리고 싶은 것이 있는데요...\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
-            keyWordReveal++;
-            unlockKeyword("키워드 #1");
-            console.log(keywordUnlocked)
+            characterSpecificText = "저, 수사관님. 수사에 도움이 될진 모르겠지만 말씀드리고 싶은 것이 있는데요...\n(그녀가 중요한 이야기를 하려는 것 같다.)";
+            briefingContent = "남지연씨에게 학교라는 이름 뒤에 숨어있던 정부 주도 비밀 프로젝트에 대해 듣게 되었다.\n평범한 학교가 아니라고 하긴 했지만, 이런 정보를 알게 줄은 몰랐는데...\n 정말 모든 것은 단순 사고였던 것일까?.\n더 물어보고 싶었지만, 남지연씨의 상태가 좋지 못해서 그렇게 조사는 끝이 났다.\n\n풀리지 않은 의문을 남긴 조사가 끝나고 다음 날, 우연히 간 카페에서 마주친 남지연씨에게 사건에 대한 이야기를 더 들어보기로 했다.";
+            keywordId = "키워드 #1";
             break;
         case 1:
-            // 2번 키워드
-            setDialogueText(response + "\n\n그런데 수사관님. 혹시 이 정보가 도움이 될까요?\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
-            keyWordReveal++;
-            unlockKeyword("키워드 #2");
-            console.log(keywordUnlocked)
+            characterSpecificText = "그런데 수사관님. 혹시 이 정보가 도움이 될까요?\n(그녀가 중요한 이야기를 하려는 것 같다.)";
+            briefingContent = "동료 교사 고유미에 대해\n\n[키워드 #2: 딸]\n사망한 교사 고유미에겐 딸이 있었습니다. 그녀 역시 이 시설에 수감되어 있었습니다. 박 교장은 자신의 딸을 위해 무엇이든 하려 했던 것으로 보이며, 이것이 사건과 연관되어 있을 수 있습니다.";
+            keywordId = "키워드 #2";
             break;
         case 2:
-            // 3번 키워드
-            setDialogueText(response + "\n\n그런데 저, 그, 사실은... 아까 미처 말씀 못 드린 부분이 있는데...\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
-            keyWordReveal++;
-            unlockKeyword("키워드 #3");
-            console.log(keywordUnlocked)
+            characterSpecificText = "그런데 저, 그, 사실은... 아까 미처 말씀 못 드린 부분이 있는데...\n(그녀가 중요한 이야기를 하려는 것 같다.)";
+            briefingContent = "수사관님, 마지막 키워드를 해금했습니다.\n\n[키워드 #3: 문호 대학교]\n남지연 교사는 화재 전 '문호 대학교' 관계자와 은밀히 접촉했던 것으로 확인되었습니다. 문호 대학교는 잔화 프로토콜과 연관된 연구를 진행했던 것으로 보이며, 화재 사건의 배후에 더 큰 그림이 있을 수 있습니다.";
+            keywordId = "키워드 #3";
             break;
         default:
-            break;
+            console.log("revealKeyWord: 더 이상 공개할 키워드가 없거나, 예상치 못한 keyWordReveal 값입니다:", keyWordReveal);
+            return;
     }
 
+
+    // AI 응답과 캐릭터 특정 메시지를 먼저 표시합니다.
+    setDialogueText(response + "\n\n" + characterSpecificText, userText); 
+
+    // 브리핑 화면에 표시될 텍스트를 전역 lines 변수에 할당
+    lines = briefingContent.split('\n'); 
+    
+    keyWordReveal++; // 키워드 카운트 증가
+    unlockKeyword(keywordId); // 탐정 노트에 키워드 잠금 해제
+
+    // 브리핑 모드 활성화 및 장면 인덱스 설정
+    keywordBriefingPending = true; 
+    briefingScene = keyWordReveal; // 1이면 키워드1 브리핑, 2이면 키워드2 브리핑...
+    
+    console.log(`키워드 해금됨: ${keywordId}. 브리핑 화면 전환 대기 중.`);
+    // 브리핑 화면 타이핑 효과를 위한 변수 초기화는 sketch.js의 mousePressed에서 gameState 변경 시 수행됩니다.
 }

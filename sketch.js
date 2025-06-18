@@ -59,6 +59,9 @@ function setup() {
     noteButton();
     setupNote();
 
+     // 인트로 시작 시 0번 장면의 대화를 로드합니다.
+    lines = getSceneLines(scene);
+    
     // 도움말 UI 셋업
     createHelpButton();
 
@@ -93,7 +96,7 @@ function draw() {
     }
 
     // 게임 상태에 따라 그리기 로직을 분기합니다.
-    if (gameState === "intro") {
+    if (gameState === "intro" || gameState === "keywordBriefing") {
         hideMainUI(); // 인트로 상태에서는 메인 UI를 숨깁니다.
         drawIntro();  // 인트로 화면만 그립니다. (intro.js)
     } else { // gameState === "main"
@@ -118,8 +121,11 @@ function draw() {
         // 탐정 노트를 그립니다 (detective-note.js에 정의).
         drawNote();
 
-        // 도움말 창을 그립니다.
+		// 도움말 창을 그립니다.
         drawHelpUI();
+        
+        // 메인 게임 상태일 때 알림 그리기
+        drawNoteNotification(); // 새로 추가할 함수 호출
     }
 }
 
@@ -129,18 +135,94 @@ function draw() {
  */
 function mousePressed() {
 
-    if (gameState === "intro") {
+    if (gameState === "intro" || gameState === "keywordBriefing") {
         // 인트로 화면의 마우스 클릭은 intro.js에서 직접 처리하고,
         // 게임 상태 전환이 필요한지 여부만 반환받습니다.
         const shouldTransition = handleIntroScreenClick(); // intro.js의 함수 호출
         if (shouldTransition) {
-            gameState = "main"; // 메인 게임으로 전환
-            console.log("게임 상태가 'main'으로 전환되었습니다.");
+            if (gameState === "intro"){
+                gameState = "main"; // 메인 게임으로 전환
+                console.log("게임 상태가 'main'으로 전환되었습니다.");
+            } else if (gameState === "keywordBriefing"){
+                gameState = "main"; //메인 게임으로 전환
+                // 키워드 해금 뒤 다음 장면 전환
+                currentSceneIndex = (currentSceneIndex + 1) % backgroundImages.length; //다음 배경으로
+                console.log(`게임 상태 'main'으로 복귀. 배경 전환: ${currentSceneIndex}`);
+
+            // 키워드 브리핑 완료 후, 탐정 노트 알림 활성화
+                if (keyWordReveal > 0) { // 최소한 하나의 키워드가 해금된 경우
+                    showNoteNotification = true;
+                    noteNotificationText = `새로운 키워드 [키워드 #${keyWordReveal}]가 탐정 노트에 해금되었습니다!`;
+                    console.log("탐정 노트 알림 활성화:", noteNotificationText);
+                }
+            }
         }
+
     } else {
+        // 알림이 표시되어 있을 때 알림 클릭 처리
+        if (showNoteNotification) {
+            // 알림 영역을 클릭했는지 확인 (대략적인 위치로 설정)
+            let notifX = width / 2 - 200;
+            let notifY = height / 2 - 50;
+            let notifW = 400;
+            let notifH = 100;
+            if (mouseX > notifX && mouseX < notifX + notifW &&
+                mouseY > notifY && mouseY < notifY + notifH) {
+                showNoteNotification = false; // 알림 닫기
+                console.log("탐정 노트 알림 닫힘.");
+                return; // 알림을 닫았으므로 다른 mousePressed 로직은 실행하지 않음
+            }
+        }
+        // 키워드 브리핑 대기 중일 때, 클릭 시 브리핑으로 전환
+        // 이 조건은 알림 닫기 로직 다음에 와야 합니다.
+        if (keywordBriefingPending) {
+           
+
+            // 현재는 화면 아무 곳이나 클릭해도 브리핑으로 넘어갑니다.
+            console.log("브리핑 대기 중: 클릭 감지. 키워드 브리핑 모드로 전환.");
+            gameState = "keywordBriefing"; // 키워드 브리핑 모드로 전환
+            keywordBriefingPending = false; // 대기 상태 해제
+
+            // 브리핑 화면 타이핑 효과를 위한 변수 초기화
+            displayedText = ""; 
+            charIndex = 0;
+            lineIndex = 0;
+            nextCharTime = millis(); // 즉시 타이핑 시작
+            typingSpeed = 30; // 브리핑 타이핑 속도 (intro.js에서 사용)
+
+            return; // 브리핑으로 전환했으므로 다른 mousePressed 로직은 실행하지 않음
+        }
+
         // 메인 게임 상태에서는 탐정 노트 관련 마우스 이벤트를 처리합니다.
-        mousePressedNote(); // detective-note.js의 함수 호출
+        mousePressedNote(); 
         handleHelpMousePressed();
+    }
+}
+
+// 탐정 노트 알림을 그리는 함수
+function drawNoteNotification() {
+    if (showNoteNotification) {
+        // 알림 패널 위치 및 크기 설정
+        let notifX = width / 2 - 200;
+        let notifY = height / 2 - 50;
+        let notifW = 400;
+        let notifH = 100;
+
+        // 알림 배경 (반투명 검은색)
+        fill(0, 0, 0, 200);
+        rect(notifX, notifY, notifW, notifH, 10); // 둥근 모서리
+
+        // 알림 텍스트
+        fill(255); // 흰색
+        textSize(18);
+        textAlign(CENTER, CENTER);
+        text(noteNotificationText, notifX + notifW / 2, notifY + notifH / 2);
+
+        // 닫기 안내 문구
+        textSize(14);
+        fill(150); // 회색
+        textAlign(CENTER, BOTTOM);
+        text("(클릭하여 닫기)", notifX + notifW / 2, notifY + notifH - 10);
     }
 }
 
