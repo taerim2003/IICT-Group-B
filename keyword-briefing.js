@@ -22,36 +22,50 @@ function setupKeywordBriefing(idx) {
     keywordBriefingNextCharTime = 0;
 }
 
+
 function drawKeywordBriefing() {
-    background(0);
-    textFont(keywordBriefingFont);
-    textSize(24);
-    fill(255);
-    textAlign(CENTER, TOP);
+    background(0); // 배경을 검은색으로 채움
 
-    // 텍스트 중앙 정렬
-    let linesCount = keywordBriefingDisplayed.split('\n').length;
-    let lineHeight = 36;
+    textAlign(CENTER, TOP); // 가로 중앙 정렬, 상단에 텍스트 시작
+    textWrap(WORD); // 단어 단위로 줄바꿈
+    textSize(20);
+    textFont(customFont);
+    fill(255); // 텍스트 색상 흰색
+
+    // 텍스트 블록의 높이 계산 및 중앙 정렬
+    let linesCount = displayedText.split('\n').length;
+    let lineHeight = 30; // 줄 간격
     let totalHeight = linesCount * lineHeight;
-    let yStart = (height - totalHeight) / 2;
+    let yStart = (height - totalHeight) / 2; // 텍스트 블록의 y 시작 지점
 
-    text(keywordBriefingDisplayed, width / 2, yStart);
+    let boxWidth = width * 0.8; // 텍스트 박스 너비
+    let boxX = width / 2 - boxWidth / 2; // 텍스트 박스 x 시작 지점
+    text(displayedText, boxX, yStart, boxWidth); // 텍스트 그리기
 
-    // 타이핑 효과
-    if (millis() > keywordBriefingNextCharTime && keywordBriefingLineIndex < keywordBriefingLines.length) {
-        if (keywordBriefingCharIndex < keywordBriefingLines[keywordBriefingLineIndex].length) {
-            keywordBriefingDisplayed += keywordBriefingLines[keywordBriefingLineIndex][keywordBriefingCharIndex];
-            keywordBriefingCharIndex++;
+    // 버튼 그리기 로직 (drawButton 함수 호출)
+    drawButton();
+
+    // 타이핑 효과 로직
+    // 현재 시간이 다음 글자 표시 시간보다 크고, 아직 모든 대화 줄이 표시되지 않았다면
+    if (millis() > nextCharTime && lineIndex < lines.length) {
+        // 현재 줄의 모든 글자가 표시되지 않았다면
+        if (charIndex < lines[lineIndex].length) {
+            displayedText += lines[lineIndex][charIndex]; // 다음 글자 추가
+            charIndex++;
         } else {
-            if (keywordBriefingLineIndex < keywordBriefingLines.length - 1) {
-                keywordBriefingDisplayed += "\n";
+            // 현재 줄의 글자가 모두 표시되었으면, 새 줄로 넘어가기
+            // 단, 마지막 줄인 경우 줄바꿈을 추가하지 않습니다.
+            // (마지막 줄 이후에는 버튼이 나타날 것이기 때문)
+            if (lineIndex < lines.length - 1) { 
+                displayedText += "\n";
             }
-            keywordBriefingLineIndex++;
-            keywordBriefingCharIndex = 0;
+            lineIndex++; // 다음 줄로 이동
+            charIndex = 0; // 글자 인덱스 초기화
         }
-        keywordBriefingNextCharTime = millis() + keywordBriefingTypingSpeed;
+        nextCharTime = millis() + typingSpeed; // 다음 글자 표시 시간 설정
     }
 }
+
 
 // 키워드별 브리핑 텍스트 반환
 function getKeywordBriefingLines(idx) {
@@ -75,13 +89,15 @@ function getKeywordBriefingLines(idx) {
 
 // 클릭 시 전체 출력 또는 다음 씬 전환
 function handleKeywordBriefingClick() {
-    if (keywordBriefingLineIndex < keywordBriefingLines.length) {
-        // 타이핑 중이면 즉시 전체 출력
-        keywordBriefingDisplayed = keywordBriefingLines.join("\n");
-        keywordBriefingLineIndex = keywordBriefingLines.length;
-        keywordBriefingCharIndex = 0;
+    if (lineIndex < lines.length)
+    {
+        // 아직 출력이 덜 된 상태 → 전체 출력
+        displayedText = lines.join("\n");
+        lineIndex = lines.length;      // 전부 출력되었다고 표시
+        charIndex = 0;                 // 더 이상 글자 출력 없음
         return false;
     }
-    // 모두 출력된 후 클릭 시 메인 게임으로 전환
+
+    // 모두 출력된 후 → 다음 씬 전환 허용
     return true;
 }

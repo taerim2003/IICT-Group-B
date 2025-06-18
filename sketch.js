@@ -69,7 +69,7 @@ function setup() {
     setupNote();
 
      // 인트로 시작 시 0번 장면의 대화를 로드합니다.
-    lines = getSceneLines(scene);
+    //lines = getSceneLines(scene);
     
     // 도움말 UI 셋업
     createHelpButton();
@@ -111,7 +111,7 @@ function draw() {
     }
 
     // 게임 상태에 따라 그리기 로직을 분기합니다.
-    if (gameState === "intro" || gameState === "keywordBriefing") {
+    if (gameState === "intro") {
         hideMainUI(); // 인트로 상태에서는 메인 UI를 숨깁니다.
         drawIntro();  // 인트로 화면만 그립니다. (intro.js)
     }else if (gameState === "keywordBriefing"){
@@ -167,7 +167,7 @@ function mousePressed() {
         }
         return;
     }
-    if (gameState === "intro" || gameState === "keywordBriefing") {
+    if (gameState === "intro") {
         // 인트로 화면의 마우스 클릭은 intro.js에서 직접 처리하고,
         // 게임 상태 전환이 필요한지 여부만 반환받습니다.
         const shouldTransition = handleIntroScreenClick(); // intro.js의 함수 호출
@@ -176,24 +176,29 @@ function mousePressed() {
                 gameState = "main"; // 메인 게임으로 전환
                 showMainUI();
                 console.log("게임 상태가 'main'으로 전환되었습니다.");
-            } else if (gameState === "keywordBriefing"){
-                gameState = "main"; //메인 게임으로 전환
-                // 키워드 해금 뒤 다음 장면 전환
-                showMainUI();
-                currentSceneIndex = (currentSceneIndex + 1) % backgroundImages.length; //다음 배경으로
-                console.log(`게임 상태 'main'으로 복귀. 배경 전환: ${currentSceneIndex}`);
-
-            // 키워드 브리핑 완료 후, 탐정 노트 알림 활성화
-                if (keyWordReveal > 0) { // 최소한 하나의 키워드가 해금된 경우
-                    newKeywordUnlockedNotification = true; 
-                    //showNoteNotification = true;
-                    noteNotificationText = `새로운 키워드 [키워드 #${keyWordReveal}]가 탐정 노트에 해금되었습니다!`;
-                    console.log("탐정 노트 알림 활성화:", noteNotificationText);
-                }
             }
         }
         return;
-    }   
+    }
+    else if (gameState === "keywordBriefing")
+    {
+        let trns = handleKeywordBriefingClick();
+        if (trns) {
+            gameState = "main"; //메인 게임으로 전환
+            // 키워드 해금 뒤 다음 장면 전환
+            showMainUI();
+            currentSceneIndex = (currentSceneIndex + 1) % backgroundImages.length; //다음 배경으로
+            console.log(`게임 상태 'main'으로 복귀. 배경 전환: ${currentSceneIndex}`);
+
+        // 키워드 브리핑 완료 후, 탐정 노트 알림 활성화
+            if (keyWordReveal > 0) { // 최소한 하나의 키워드가 해금된 경우
+                newKeywordUnlockedNotification = true; 
+                //showNoteNotification = true;
+                noteNotificationText = `새로운 키워드 [키워드 #${keyWordReveal}]가 탐정 노트에 해금되었습니다!`;
+                console.log("탐정 노트 알림 활성화:", noteNotificationText);
+            }
+        }
+    }
     
     // 알림이 표시되어 있을 때 알림 클릭 처리
     if (gameState === "main" && showNoteNotification) {
