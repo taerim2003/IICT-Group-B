@@ -53,6 +53,8 @@ function revealKeyWord(response, userText)
             setDialogueText(response + "\n\n저, 수사관님. 수사에 도움이 될진 모르겠지만 말씀드리고 싶은 것이 있는데요...\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
             keyWordReveal++;
             unlockKeyword("키워드 #1");
+            setupKeywordBriefing(0);
+            gameState = "keywordBriefing";
             console.log(keywordUnlocked)
             break;
         case 1:
@@ -60,6 +62,8 @@ function revealKeyWord(response, userText)
             setDialogueText(response + "\n\n그런데 수사관님. 혹시 이 정보가 도움이 될까요?\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
             keyWordReveal++;
             unlockKeyword("키워드 #2");
+            setupKeywordBriefing(1);
+            gameState = "keywordBriefing";
             console.log(keywordUnlocked)
             break;
         case 2:
@@ -67,6 +71,11 @@ function revealKeyWord(response, userText)
             setDialogueText(response + "\n\n그런데 저, 그, 사실은... 아까 미처 말씀 못 드린 부분이 있는데...\n(그녀가 중요한 이야기를 하려는 것 같다.)", userText); 
             keyWordReveal++;
             unlockKeyword("키워드 #3");
+            setupKeywordBriefing(2);
+            gameState = "keywordBriefing";
+            setupEndingSequence();
+            endingActive = true;
+
             console.log(keywordUnlocked)
             break;
         default:

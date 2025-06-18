@@ -18,6 +18,8 @@ function preload() {
     loadCharacterImages();
     loadSystemPrompt();
     preloadNote();
+    preloadKeywordBriefing();
+    preloadEndingSequence();
 
     console.log("preload() 완료.");
 }
@@ -107,7 +109,12 @@ function draw() {
     if (gameState === "intro" || gameState === "keywordBriefing") {
         hideMainUI(); // 인트로 상태에서는 메인 UI를 숨깁니다.
         drawIntro();  // 인트로 화면만 그립니다. (intro.js)
-    } else { // gameState === "main"
+    }else if (gameState === "keywordBriefing"){
+        hideMainUI();
+        drawKeywordBriefing();
+        return;
+    } 
+    else { // gameState === "main"
         showMainUI(); // 메인 게임 상태에서는 UI를 표시합니다.
         
         // 현재 장면에 맞는 배경 이미지를 그립니다.
