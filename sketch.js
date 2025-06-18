@@ -119,9 +119,19 @@ function draw() {
         drawKeywordBriefing();
         return;
     } 
-    else if (gameState === "ending" && endingActive) {
-        drawEndingSequence();
-        return;
+    else if (gameState === "ending") {
+        if (endingActive)
+        {
+            drawEndingSequence();
+            return;
+        }
+        else
+        {
+            textSize(36);
+            textAlign(CENTER, CENTER);
+            text("- 진엔딩 -\n\n고유미의 범행을 끝까지 숨기고자 했던 남주연의 서늘한 웃음으로 끝이 났습니다.\n\n리플레이하시려면 새로고침 키를 눌러주세요", width / 2, height / 2);
+        }
+        
     }
     else { // gameState === "main"
         showMainUI(); // 메인 게임 상태에서는 UI를 표시합니다.
