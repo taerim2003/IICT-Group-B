@@ -29,8 +29,7 @@ function loadCharacterImages() {
         }
     ); 
 
-    // ⭐ 배경 이미지 로드 (장면별 이미지 다시 추가)
-    // 이 파일명들을 팀원이 제공할 실제 이미지 파일명으로 교체해주세요.
+    //  배경 이미지 로드 (장면별 이미지 다시 추가)
     // 'assets/background_1.png'는 초기 배경입니다.
     backgroundImages[0] = loadImage('assets/background_1.png', 
         () => console.log("배경 이미지 1 로드 성공!"),

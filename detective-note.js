@@ -45,11 +45,16 @@ function setupNote() {
 // 메인 "탐정 노트" 버튼을 생성합니다.
 // sketch.js의 setup() 함수에서 호출됩니다.
 function noteButton() {
-  let noteBtn = createButton('탐정 노트'); 
-  noteBtn.id('note-button');
-  noteBtn.position(10, 50); // ⭐ 좌측 상단 (10, 50) 위치로 재설정
-  noteBtn.mousePressed(toggleNote); // 노트 토글을 위한 클릭 핸들러 할당
-  console.log("탐정 노트 버튼 생성 완료.");
+    detectiveNoteP5Button = createButton(''); // '탐정 노트' 텍스트 제거
+    detectiveNoteP5Button.id('detective-note-p5-button'); // ID를 '#detective-note-p5-button'으로 일치시킴
+   
+
+    // 버튼 위치와 크기를 아이콘 이미지(`button.png`)의 크기에 맞게 조정합니다.
+    detectiveNoteP5Button.position(10, 50);
+    detectiveNoteP5Button.size(100, 100);
+    detectiveNoteP5Button.mousePressed(toggleNote);
+    detectiveNoteP5Button.hide(); // 초기에는 숨김 (sketch.js의 hideMainUI에서 제어)
+    console.log("탐정 노트 버튼 생성 완료.");
 }
 
 // 탐정 노트의 가시성을 토글합니다.
@@ -80,18 +85,20 @@ function toggleNote() {
 
       // 점수 표시 컨테이너의 z-index를 낮게 설정하여 노트 뒤로 숨깁니다.
       // 이것은 사라지는 것이 아니라, 노트 뒤에 가려져 보이게 하는 것입니다.
-    scoreDisplayContainerElement.style('z-index', '0');
+      scoreDisplayContainerElement.style('z-index', '0');
       console.log("Score Display z-index set to 0 (Note open)");
+      newKeywordUnlockedNotification = false;
 
   } else { // 노트가 닫히는 경우
       // 캔버스 컨테이너의 z-index를 기본값으로 재설정합니다.
-    p5CanvasContainer.style('z-index', '1');
+      p5CanvasContainer.style('z-index', '1');
       console.log("Canvas z-index set to 1 (Note closed)");
 
       // 점수 표시 컨테이너의 z-index를 원래 값으로 재설정합니다 (style.css에서 정의된 값).
-    scoreDisplayContainerElement.style('z-index', '15');
+      scoreDisplayContainerElement.style('z-index', '15');
       console.log("Score Display z-index set to 15 (Note closed)");
   }
+   updateDetectiveNoteButtonAppearance();
 }
 
 
@@ -146,11 +153,6 @@ function mousePressedNote() {
   }
 }
 
-/*function noteButtonPressed()
-{
-    isClosed = !isClosed;
-    console.log(isClosed);
-}*/
 
 class Button {
   constructor(label, x, y, w, h, onClick) {
@@ -181,4 +183,22 @@ class Button {
 
 function unlockKeyword(keywordName) {
   keywordUnlocked[keywordName] = true;
+  newKeywordUnlockedNotification = true;
+}
+
+function updateDetectiveNoteButtonAppearance() {
+    if (!detectiveNoteP5Button) {
+        console.warn("탐정 노트 버튼 요소를 찾을 수 없어 외형을 업데이트할 수 없습니다.");
+        return;
+    }
+
+    if (newKeywordUnlockedNotification) {
+        // 새 키워드가 해금되면 알림 아이콘 표시
+        detectiveNoteP5Button.removeClass('note-button-normal');
+        detectiveNoteP5Button.addClass('note-button-alert');
+    } else {
+        // 그렇지 않으면 일반 아이콘 표시
+        detectiveNoteP5Button.removeClass('note-button-alert');
+        detectiveNoteP5Button.addClass('note-button-normal');
+    }
 }

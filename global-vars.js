@@ -78,3 +78,5 @@ let p5CanvasContainer; // P5.js 캔버스를 감싸는 HTML div 참조
 
 let scoreDisplayContainerElement; // 긴장도/친밀도 점수 컨테이너 HTML div 참조
 
+let detectiveNoteP5Button; // 탐정 노트 버튼 P5.js 인스턴스 (detective-note.js에서 할당)
+let newKeywordUnlockedNotification = false;
