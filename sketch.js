@@ -2,7 +2,7 @@
 // sketch.js
 
 // 전역 게임 상태를 'intro'로 초기화합니다.
-let gameState = "intro";
+let gameState = "start";
 
 // ... (다른 전역 변수들: global-vars.js에 정의되어 있을 것으로 예상) ...
 
@@ -12,7 +12,9 @@ let gameState = "intro";
  */
 function preload() {
     console.log("preload() 시작: 리소스 로드 중...");
+    preloadStart();
     preloadIntro(); // intro.js의 preload 함수 호출 (폰트 로드)
+    preloadBadEndings();
     loadCharacterImages();
     loadSystemPrompt();
     preloadNote();
@@ -74,9 +76,15 @@ function setup() {
 function draw() {
     // CSS로 설정된 배경 이미지가 보이도록 매 프레임 캔버스를 투명하게 지웁니다.
     clear(); 
+    if (gameState === "start") {
+    hideMainUI();
+    drawStartScreen(); // ✅ start.js에서 정의된 시작 화면 그리기 함수
+    return;
+}
 
     // 배드엔딩 유형에 따라 해당 이미지를 표시하고 그리기를 종료합니다.
     if (badEndingType) {
+        hideMainUI();
         let img;
         if (badEndingType === "zero") img = badEndingImage0;
         else if (badEndingType === "tension") img = badEndingImageTension;
@@ -135,6 +143,14 @@ function draw() {
  */
 function mousePressed() {
 
+    if (gameState === "start") {
+        const shouldGoToIntro = handleStartScreenClick();
+        if (shouldGoToIntro) {
+            gameState = "intro";
+            console.log("게임 상태가 'intro'로 전환되었습니다.");
+        }
+        return;
+    }
     if (gameState === "intro" || gameState === "keywordBriefing") {
         // 인트로 화면의 마우스 클릭은 intro.js에서 직접 처리하고,
         // 게임 상태 전환이 필요한지 여부만 반환받습니다.
