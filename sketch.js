@@ -2,7 +2,7 @@
 // sketch.js
 
 // 전역 게임 상태를 'intro'로 초기화합니다.
-let gameState = "intro";
+let gameState = "start";
 
 // ... (다른 전역 변수들: global-vars.js에 정의되어 있을 것으로 예상) ...
 
@@ -12,10 +12,14 @@ let gameState = "intro";
  */
 function preload() {
     console.log("preload() 시작: 리소스 로드 중...");
+    preloadStart();
     preloadIntro(); // intro.js의 preload 함수 호출 (폰트 로드)
+    preloadBadEndings();
     loadCharacterImages();
     loadSystemPrompt();
     preloadNote();
+    detectiveNoteIcon = loadImage("assets/button.png"); 
+    noteNotificationIcon = loadImage("assets/notiButton.png");
 
     console.log("preload() 완료.");
 }
@@ -57,10 +61,17 @@ function setup() {
 
     // 탐정 노트 셋업 및 버튼 생성 (detective-note.js에 정의)
     noteButton();
+       // 초기 클래스 설정
+    detectiveNoteP5Button.addClass('note-button-normal');
+    // 초기 알림 상태를 기반으로 외형 업데이트 (초기에는 false일 가능성이 높음)
+    updateDetectiveNoteButtonAppearance();
     setupNote();
 
      // 인트로 시작 시 0번 장면의 대화를 로드합니다.
     lines = getSceneLines(scene);
+    
+    // 도움말 UI 셋업
+    createHelpButton();
 
     console.log("setup() 완료");
 }
@@ -71,9 +82,15 @@ function setup() {
 function draw() {
     // CSS로 설정된 배경 이미지가 보이도록 매 프레임 캔버스를 투명하게 지웁니다.
     clear(); 
+    if (gameState === "start") {
+    hideMainUI();
+    drawStartScreen(); // ✅ start.js에서 정의된 시작 화면 그리기 함수
+    return;
+}
 
     // 배드엔딩 유형에 따라 해당 이미지를 표시하고 그리기를 종료합니다.
     if (badEndingType) {
+        hideMainUI();
         let img;
         if (badEndingType === "zero") img = badEndingImage0;
         else if (badEndingType === "tension") img = badEndingImageTension;
@@ -96,7 +113,10 @@ function draw() {
     if (gameState === "intro" || gameState === "keywordBriefing") {
         hideMainUI(); // 인트로 상태에서는 메인 UI를 숨깁니다.
         drawIntro();  // 인트로 화면만 그립니다. (intro.js)
+
+       
     } else { // gameState === "main"
+        updateDetectiveNoteButtonAppearance();
         showMainUI(); // 메인 게임 상태에서는 UI를 표시합니다.
         
         // 현재 장면에 맞는 배경 이미지를 그립니다.
@@ -118,8 +138,15 @@ function draw() {
         // 탐정 노트를 그립니다 (detective-note.js에 정의).
         drawNote();
 
+		// 도움말 창을 그립니다.
+        drawHelpUI();
+        
         // 메인 게임 상태일 때 알림 그리기
         drawNoteNotification(); // 새로 추가할 함수 호출
+    }
+
+        if (!isClosed) {
+        drawNote();
     }
 }
 
@@ -129,6 +156,14 @@ function draw() {
  */
 function mousePressed() {
 
+    if (gameState === "start") {
+        const shouldGoToIntro = handleStartScreenClick();
+        if (shouldGoToIntro) {
+            gameState = "intro";
+            console.log("게임 상태가 'intro'로 전환되었습니다.");
+        }
+        return;
+    }
     if (gameState === "intro" || gameState === "keywordBriefing") {
         // 인트로 화면의 마우스 클릭은 intro.js에서 직접 처리하고,
         // 게임 상태 전환이 필요한지 여부만 반환받습니다.
@@ -176,6 +211,7 @@ function mousePressed() {
             console.log("브리핑 대기 중: 클릭 감지. 키워드 브리핑 모드로 전환.");
             gameState = "keywordBriefing"; // 키워드 브리핑 모드로 전환
             keywordBriefingPending = false; // 대기 상태 해제
+            hideMainUI();
 
             // 브리핑 화면 타이핑 효과를 위한 변수 초기화
             displayedText = ""; 
@@ -183,12 +219,16 @@ function mousePressed() {
             lineIndex = 0;
             nextCharTime = millis(); // 즉시 타이핑 시작
             typingSpeed = 30; // 브리핑 타이핑 속도 (intro.js에서 사용)
-
+            setDialogueText('','');
             return; // 브리핑으로 전환했으므로 다른 mousePressed 로직은 실행하지 않음
         }
 
-        // 메인 게임 상태에서는 탐정 노트 관련 마우스 이벤트를 처리합니다.
-        mousePressedNote(); 
+        // 노트가 닫혀있지 않은 경우 (즉, 열려있는 경우)에만 노트 내부 클릭을 처리합니다.
+        if (!isClosed) {
+            mousePressedNote(); // detective-note.js에 정의됨
+            return; // 노트가 열려있을 때는 다른 메인 UI 클릭을 처리하지 않음
+        }
+        handleHelpMousePressed();
     }
 }
 
@@ -224,8 +264,16 @@ function drawNoteNotification() {
  */
 function hideMainUI() {
     select('#score-display-container')?.style('display', 'none');
-    select('#input-area')?.style('display', 'none');
-    select('#note-button')?.style('display', 'none'); // 탐정 노트 버튼도 숨깁니다.
+     const inputArea = select('#input-area');
+    if (inputArea) {
+        inputArea.style('display', 'none');
+        // 입력 필드와 버튼도 직접 비활성화 (disabled 속성)
+        select('#player-input')?.attribute('disabled', true);
+        select('#send-button')?.attribute('disabled', true);
+    }
+    if (detectiveNoteP5Button) { // 버튼 인스턴스가 존재하는지 확인
+        detectiveNoteP5Button.hide(); // P5.js DOM 엘리먼트의 hide() 메서드 사용
+    }
 }
 
 /**
@@ -234,6 +282,15 @@ function hideMainUI() {
 function showMainUI() {
     select('#score-display-container')?.style('display', 'flex');
     select('#input-area')?.style('display', 'flex');
-    select('#note-button')?.style('display', 'flex'); // 탐정 노트 버튼도 표시합니다.
-
+    // 입력창(#input-area)과 그 안의 요소들을 모두 표시하고 활성화합니다.
+    const inputArea = select('#input-area');
+    if (inputArea) {
+        inputArea.style('display', 'flex');
+        // 입력 필드와 버튼도 직접 활성화 (disabled 속성 제거)
+        select('#player-input')?.removeAttribute('disabled');
+        select('#send-button')?.removeAttribute('disabled');
+    }
+     if (detectiveNoteP5Button) { // 버튼 인스턴스가 존재하는지 확인
+        detectiveNoteP5Button.show(); // P5.js DOM 엘리먼트의 show() 메서드 사용
+    }
 }

@@ -10,10 +10,10 @@
 let badEndingImage0, badEndingImageTension, badEndingImageAffinity;
 
 
-function preload() {
+function preloadBadEndings() {
     badEndingImage0 = loadImage('assets/bad3.png');         // 점수 0 이하
-    badEndingImageTension = loadImage('assets/bad2.png'); // 긴장도 100
-    badEndingImageAffinity = loadImage('assets/bad1.png'); // 친밀도 100
+    badEndingImageTension = loadImage('assets/bad2.jpg'); // 긴장도 100
+    badEndingImageAffinity = loadImage('assets/bad1.JPG'); // 친밀도 100
 }
 
 
@@ -76,14 +76,14 @@ function revealKeyWord(response, userText)
 }
 
 function checkStatus() {
-    if (tensionScore <= 60 || affinityScore <= 60) {
-        status = Status.IDLE;
-    }
-    else if (tensionScore - affinityScore >= difference) {
+    if (tensionScore - affinityScore >= difference) {
         status = Status.TENSION;
     }
     else if (affinityScore - tensionScore >= difference) {
         status = Status.AFFINITY;
+    }
+    else if (tensionScore <= 60 || affinityScore <= 60) {
+        status = Status.IDLE;
     }
     else {
         status = Status.HELPFUL;
