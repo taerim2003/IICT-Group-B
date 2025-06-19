@@ -78,6 +78,9 @@ async function handleUserInput() {
     setDialogueText('(그녀는 답변을 고민하고 있다.)', userText);
     playerInput.value('');
 
+    console.log("@@@@@@@@@@@@");
+    console.log(status);
+
     const aiResponse = await generateContent(userText, keyWordReveal, scoreMax, scoreMin, status);
     console.log("AI 응답 받음:", aiResponse);
 
