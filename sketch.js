@@ -12,8 +12,10 @@ function preload() {
     loadCharacterImages();
     loadSystemPrompt();
     preloadNote();
-    
-
+    preloadKeywordBriefing();
+    preloadEndingSequence();
+    detectiveNoteIcon = loadImage("assets/button.png"); 
+    noteNotificationIcon = loadImage("assets/notiButton.png");
     console.log("preload() 완료.");
 }
 
@@ -27,6 +29,7 @@ function setup() {
     // 캔버스 생성 및 부모 요소 지정
     let canvas = createCanvas(gameContainerWidth, gameContainerHeight);
     canvas.parent('p5-canvas-container');
+    canvas.position(0, 0);
 
     // HTML 요소 참조를 전역 변수에 할당 (global-vars.js에 선언됨)
     p5CanvasContainer = select('#p5-canvas-container');
@@ -43,8 +46,8 @@ function setup() {
     initializeUIElements();
 
     // 디버깅용 대화 기록 저장 버튼 생성
-    setSaveHistoryButton();
-    saveBtn.position(10, 10);
+    //setSaveHistoryButton();
+    //saveBtn.position(10, 10);
 
     // 게임 시작 시 초기 대화 메시지 설정 (dialogue-manager.js에 정의)
     setDialogueText('', '');
@@ -63,7 +66,7 @@ function setup() {
     setupNote();
 
      // 인트로 시작 시 0번 장면의 대화를 로드합니다.
-    lines = getSceneLines(scene);
+    //lines = getSceneLines(scene);
     
     // 도움말 UI 셋업
     createHelpButton();
@@ -81,7 +84,7 @@ function draw() {
     hideMainUI();
     drawStartScreen(); // ✅ start.js에서 정의된 시작 화면 그리기 함수
     return;
-}
+    }
 
     // 배드엔딩 유형에 따라 해당 이미지를 표시하고 그리기를 종료합니다.
     if (badEndingType) {
@@ -105,15 +108,12 @@ function draw() {
     }
 
     // 게임 상태에 따라 그리기 로직을 분기합니다.
-    if (gameState === "intro" || gameState === "keywordBriefing") {
+    if (gameState === "intro") {
         hideMainUI(); // 인트로 상태에서는 메인 UI를 숨깁니다.
         drawIntro();  // 인트로 화면만 그립니다. (intro.js)
-<<<<<<< Updated upstream
-
        
     } else { // gameState === "main"
         updateDetectiveNoteButtonAppearance();
-=======
     }else if (gameState === "keywordBriefing"){
         hideMainUI();
         drawKeywordBriefing();
@@ -130,11 +130,11 @@ function draw() {
             textSize(36);
             textAlign(CENTER, CENTER);
             text("- 진엔딩 -\n\n고유미의 범행을 끝까지 숨기고자 했던 남지연의 서늘한 웃음으로 끝이 났습니다.\n\n리플레이하시려면 새로고침 키를 눌러주세요", width / 2, height / 2);
+
         }
         
     }
     else { // gameState === "main"
->>>>>>> Stashed changes
         showMainUI(); // 메인 게임 상태에서는 UI를 표시합니다.
         
         // 현재 장면에 맞는 배경 이미지를 그립니다.
@@ -184,23 +184,40 @@ function draw() {
 function mousePressed() {
 
     if (gameState === "start") {
-        const shouldGoToIntro = handleStartScreenClick();
+        let shouldGoToIntro = handleStartScreenClick();
         if (shouldGoToIntro) {
             gameState = "intro";
             console.log("게임 상태가 'intro'로 전환되었습니다.");
         }
         return;
     }
-    if (gameState === "intro" || gameState === "keywordBriefing") {
+    if (gameState === "intro") {
         // 인트로 화면의 마우스 클릭은 intro.js에서 직접 처리하고,
         // 게임 상태 전환이 필요한지 여부만 반환받습니다.
-        const shouldTransition = handleIntroScreenClick(); // intro.js의 함수 호출
+        let shouldTransition = handleIntroScreenClick(); // intro.js의 함수 호출
         if (shouldTransition) {
             if (gameState === "intro"){
                 gameState = "main"; // 메인 게임으로 전환
                 showMainUI();
                 console.log("게임 상태가 'main'으로 전환되었습니다.");
-            } else if (gameState === "keywordBriefing"){
+            }
+        }
+        return;
+    }
+    else if (gameState === "keywordBriefing")
+    {
+        let trns = handleKeywordBriefingClick();
+        if (trns) {
+            // 엔딩이왜안될까
+            if (keyWordReveal >= 3) 
+            {   
+                gameState = "ending";
+                setupEndingSequence();
+                endingActive = true;
+                return;
+            }
+            else
+            {
                 gameState = "main"; //메인 게임으로 전환
                 // 키워드 해금 뒤 다음 장면 전환
                 showMainUI();
@@ -216,8 +233,11 @@ function mousePressed() {
                 }
             }
         }
-        return;
-    }   
+    }
+    else if (gameState === "ending")
+    {
+        handleEndingSequenceClick();
+    }
     
     // 알림이 표시되어 있을 때 알림 클릭 처리
     if (gameState === "main" && showNoteNotification) {
