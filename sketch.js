@@ -29,6 +29,7 @@ function setup() {
     // 캔버스 생성 및 부모 요소 지정
     let canvas = createCanvas(gameContainerWidth, gameContainerHeight);
     canvas.parent('p5-canvas-container');
+    canvas.position(0, 0);
 
     // HTML 요소 참조를 전역 변수에 할당 (global-vars.js에 선언됨)
     p5CanvasContainer = select('#p5-canvas-container');
@@ -45,8 +46,8 @@ function setup() {
     initializeUIElements();
 
     // 디버깅용 대화 기록 저장 버튼 생성
-    setSaveHistoryButton();
-    saveBtn.position(10, 10);
+    //setSaveHistoryButton();
+    //saveBtn.position(10, 10);
 
     // 게임 시작 시 초기 대화 메시지 설정 (dialogue-manager.js에 정의)
     setDialogueText('', '');
