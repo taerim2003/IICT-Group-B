@@ -108,10 +108,33 @@ function draw() {
     if (gameState === "intro" || gameState === "keywordBriefing") {
         hideMainUI(); // 인트로 상태에서는 메인 UI를 숨깁니다.
         drawIntro();  // 인트로 화면만 그립니다. (intro.js)
+<<<<<<< Updated upstream
 
        
     } else { // gameState === "main"
         updateDetectiveNoteButtonAppearance();
+=======
+    }else if (gameState === "keywordBriefing"){
+        hideMainUI();
+        drawKeywordBriefing();
+        return;
+    } 
+    else if (gameState === "ending") {
+        if (endingActive)
+        {
+            drawEndingSequence();
+            return;
+        }
+        else
+        {
+            textSize(36);
+            textAlign(CENTER, CENTER);
+            text("- 진엔딩 -\n\n고유미의 범행을 끝까지 숨기고자 했던 남지연의 서늘한 웃음으로 끝이 났습니다.\n\n리플레이하시려면 새로고침 키를 눌러주세요", width / 2, height / 2);
+        }
+        
+    }
+    else { // gameState === "main"
+>>>>>>> Stashed changes
         showMainUI(); // 메인 게임 상태에서는 UI를 표시합니다.
         
         // 현재 장면에 맞는 배경 이미지를 그립니다.
@@ -211,31 +234,36 @@ function mousePressed() {
         }
     }
     // 게임 상태가 intro 또는 keywordBriefing일 때의 클릭 처리
-    if (gameState === "intro" || gameState === "keywordBriefing") {
-        const shouldTransition = handleIntroScreenClick(); // intro.js의 함수 호출 (이 함수가 브리핑 처리도 한다고 가정)
-        if (shouldTransition) {
-            if (gameState === "intro"){
-                gameState = "main"; // 메인 게임으로 전환
-                showMainUI();
-                console.log("게임 상태가 'main'으로 전환되었습니다.");
-            } else if (gameState === "keywordBriefing"){
-                gameState = "main"; //메인 게임으로 전환
-                // 키워드 해금 뒤 다음 장면 전환
-                showMainUI();
-                currentSceneIndex = (currentSceneIndex + 1) % backgroundImages.length; //다음 배경으로
-                console.log(`게임 상태 'main'으로 복귀. 배경 전환: ${currentSceneIndex}`);
+   if (gameState === "intro") {
+    const shouldTransition = handleIntroScreenClick(); // intro.js 전용
+    if (shouldTransition) {
+        gameState = "main";
+        showMainUI();
+        console.log("게임 상태가 'main'으로 전환되었습니다.");
+    }
+    return;
+} else if (gameState === "keywordBriefing") {
+    const trns = handleKeywordBriefingClick(); // ✅ 따로 정의된 함수 사용
+    if (trns) {
+        if (keyWordReveal >= 3) {
+            gameState = "ending";
+            setupEndingSequence();
+            endingActive = true;
+        } else {
+            gameState = "main";
+            showMainUI();
+            currentSceneIndex = (currentSceneIndex + 1) % backgroundImages.length;
 
-                // ⭐ 키워드 브리핑 완료 후, 'main' 상태로 돌아왔을 때 탐정 노트 알림 활성화
-                if (keyWordReveal > 0) { // 최소한 하나의 키워드가 해금된 경우
-                    newKeywordUnlockedNotification = true; 
-                    showNoteNotification = true; // ✅ 여기에서 팝업을 띄우도록 설정
-                    noteNotificationText = `새로운 키워드 [키워드 #${keyWordReveal}]가 탐정 노트에 해금되었습니다!`;
-                    console.log("탐정 노트 알림 활성화:", noteNotificationText);
-                }
+            if (keyWordReveal > 0) {
+                newKeywordUnlockedNotification = true;
+                showNoteNotification = true;
+                noteNotificationText = `새로운 키워드 [키워드 #${keyWordReveal}]가 탐정 노트에 해금되었습니다!`;
             }
         }
-        return; // intro 또는 keywordBriefing 상태 클릭 처리 후 종료
-    }  
+    }
+    return;
+}
+
         // 키워드 브리핑 대기 중일 때, 클릭 시 브리핑으로 전환
         // 이 조건은 알림 닫기 로직 다음에 와야 합니다.
         if (gameState === "main" && keywordBriefingPending) {
