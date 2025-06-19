@@ -1,9 +1,14 @@
-
 // sketch.js
 
 // 전역 게임 상태를 'intro'로 초기화합니다.
 let gameState = "start";
 
+// ... (다른 전역 변수들: global-vars.js에 정의되어 있을 것으로 예상) ...
+
+/**
+ * preload() 함수: P5.js 스케치가 시작되기 전에 이미지, 폰트 등 외부 파일을 로드합니다.
+ * 캐릭터, 시스템 프롬프트, 노트 관련 리소스 로드 함수를 호출합니다.
+ */
 function preload() {
     console.log("preload() 시작: 리소스 로드 중...");
     preloadStart();
@@ -29,7 +34,6 @@ function setup() {
     // 캔버스 생성 및 부모 요소 지정
     let canvas = createCanvas(gameContainerWidth, gameContainerHeight);
     canvas.parent('p5-canvas-container');
-    canvas.position(0, 0);
 
     // HTML 요소 참조를 전역 변수에 할당 (global-vars.js에 선언됨)
     p5CanvasContainer = select('#p5-canvas-container');
@@ -58,11 +62,9 @@ function setup() {
     // 탐정 노트 셋업 및 버튼 생성 (detective-note.js에 정의)
     noteButton();
        // 초기 클래스 설정
-    if (detectiveNoteP5Button){
-        detectiveNoteP5Button.addClass('note-button-normal');
+    detectiveNoteP5Button.addClass('note-button-normal');
     // 초기 알림 상태를 기반으로 외형 업데이트 (초기에는 false일 가능성이 높음)
     updateDetectiveNoteButtonAppearance();
-    }
     setupNote();
 
      // 인트로 시작 시 0번 장면의 대화를 로드합니다.
@@ -111,9 +113,6 @@ function draw() {
     if (gameState === "intro") {
         hideMainUI(); // 인트로 상태에서는 메인 UI를 숨깁니다.
         drawIntro();  // 인트로 화면만 그립니다. (intro.js)
-       
-    } else { // gameState === "main"
-        updateDetectiveNoteButtonAppearance();
     }else if (gameState === "keywordBriefing"){
         hideMainUI();
         drawKeywordBriefing();
@@ -130,7 +129,6 @@ function draw() {
             textSize(36);
             textAlign(CENTER, CENTER);
             text("- 진엔딩 -\n\n고유미의 범행을 끝까지 숨기고자 했던 남지연의 서늘한 웃음으로 끝이 났습니다.\n\n리플레이하시려면 새로고침 키를 눌러주세요", width / 2, height / 2);
-
         }
         
     }
@@ -160,16 +158,7 @@ function draw() {
         drawHelpUI();
         
         // 메인 게임 상태일 때 알림 그리기
-        if (showNoteNotification){
         drawNoteNotification(); // 새로 추가할 함수 호출
-        }
-
-        if (keywordBriefingPending) {
-            fill(0, 255, 0); 
-            textSize(16);
-            textAlign(RIGHT, BOTTOM);
-            text("Click!", width - 30, height - 30); 
-        }
     }
 
         if (!isClosed) {
@@ -223,14 +212,13 @@ function mousePressed() {
                 showMainUI();
                 currentSceneIndex = (currentSceneIndex + 1) % backgroundImages.length; //다음 배경으로
                 console.log(`게임 상태 'main'으로 복귀. 배경 전환: ${currentSceneIndex}`);
-
-            // 키워드 브리핑 완료 후, 탐정 노트 알림 활성화
-                if (keyWordReveal > 0) { // 최소한 하나의 키워드가 해금된 경우
-                    newKeywordUnlockedNotification = true; 
-                    showNoteNotification = true;
-                    noteNotificationText = `새로운 키워드 [키워드 #${keyWordReveal}]가 탐정 노트에 해금되었습니다!`;
-                    console.log("탐정 노트 알림 활성화:", noteNotificationText);
-                }
+            }
+        // 키워드 브리핑 완료 후, 탐정 노트 알림 활성화
+            if (keyWordReveal > 0) { // 최소한 하나의 키워드가 해금된 경우
+                newKeywordUnlockedNotification = true; 
+                //showNoteNotification = true;
+                noteNotificationText = `새로운 키워드 [키워드 #${keyWordReveal}]가 탐정 노트에 해금되었습니다!`;
+                console.log("탐정 노트 알림 활성화:", noteNotificationText);
             }
         }
     }
@@ -253,40 +241,9 @@ function mousePressed() {
             return; // 알림을 닫았으므로 다른 mousePressed 로직은 실행하지 않음
         }
     }
-    // 게임 상태가 intro 또는 keywordBriefing일 때의 클릭 처리
-   if (gameState === "intro") {
-    const shouldTransition = handleIntroScreenClick(); // intro.js 전용
-    if (shouldTransition) {
-        gameState = "main";
-        showMainUI();
-        console.log("게임 상태가 'main'으로 전환되었습니다.");
-    }
-    return;
-} else if (gameState === "keywordBriefing") {
-    const trns = handleKeywordBriefingClick(); // ✅ 따로 정의된 함수 사용
-    if (trns) {
-        if (keyWordReveal >= 3) {
-            gameState = "ending";
-            setupEndingSequence();
-            endingActive = true;
-        } else {
-            gameState = "main";
-            showMainUI();
-            currentSceneIndex = (currentSceneIndex + 1) % backgroundImages.length;
-
-            if (keyWordReveal > 0) {
-                newKeywordUnlockedNotification = true;
-                showNoteNotification = true;
-                noteNotificationText = `새로운 키워드 [키워드 #${keyWordReveal}]가 탐정 노트에 해금되었습니다!`;
-            }
-        }
-    }
-    return;
-}
-
         // 키워드 브리핑 대기 중일 때, 클릭 시 브리핑으로 전환
         // 이 조건은 알림 닫기 로직 다음에 와야 합니다.
-        if (gameState === "main" && keywordBriefingPending) {
+        if (keywordBriefingPending) {
            
 
             // 현재는 화면 아무 곳이나 클릭해도 브리핑으로 넘어갑니다.
@@ -306,7 +263,7 @@ function mousePressed() {
         }
 
         // 노트가 닫혀있지 않은 경우 (즉, 열려있는 경우)에만 노트 내부 클릭을 처리합니다.
-        if (gameState === "main" && !isClosed) {
+        if (!isClosed) {
             mousePressedNote(); // detective-note.js에 정의됨
             return; // 노트가 열려있을 때는 다른 메인 UI 클릭을 처리하지 않음
         }
