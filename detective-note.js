@@ -50,8 +50,8 @@ function noteButton() {
    
 
     // 버튼 위치와 크기를 아이콘 이미지(`button.png`)의 크기에 맞게 조정합니다.
-    detectiveNoteP5Button.position(10, 50);
-    detectiveNoteP5Button.size(100, 100);
+    detectiveNoteP5Button.position(90, 180);
+    detectiveNoteP5Button.size(150, 150);
     detectiveNoteP5Button.mousePressed(toggleNote);
     detectiveNoteP5Button.hide(); // 초기에는 숨김 (sketch.js의 hideMainUI에서 제어)
     console.log("탐정 노트 버튼 생성 완료.");
@@ -184,6 +184,7 @@ class Button {
 function unlockKeyword(keywordName) {
   keywordUnlocked[keywordName] = true;
   newKeywordUnlockedNotification = true;
+  updateDetectiveNoteButtonAppearance(); // 키워드 해금 시 버튼 외형 업데이트
 }
 
 function updateDetectiveNoteButtonAppearance() {

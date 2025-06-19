@@ -40,9 +40,9 @@ function loadCharacterImages() {
     backgroundImages[2] = loadImage('assets/background_3.png', // 2번째 키워드 해금 후 배경
         () => console.log("배경 이미지 3 로드 성공!"),
         (event) => { console.error("배경 이미지 3 로드 실패: 'assets/background_3.png'", event); });
-    backgroundImages[3] = loadImage('assets/background_4.png', // 3번째 키워드 해금 후 배경
+   /* backgroundImages[3] = loadImage('assets/background_4.png', // 3번째 키워드 해금 후 배경
         () => console.log("배경 이미지 4 로드 성공!"),
-        (event) => { console.error("배경 이미지 4 로드 실패: 'assets/background_4.jpg'", event); });
+        (event) => { console.error("배경 이미지 4 로드 실패: 'assets/background_4.jpg'", event); });*/
 
     catImage_idle = loadImage('assets/cat_idle.png', 
         () => console.log("고양이 idle 로드 성공!"),
